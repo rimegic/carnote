@@ -4,7 +4,7 @@
 service: art
 
 # Name of the container image.
-image: rimegic00/a # 당신의 Docker Hub 사용자 이름과 이미지 이름
+image: rimegic00/aa # 당신의 Docker Hub 사용자 이름과 이미지 이름
 
 # Deploy to these servers.
 servers:
