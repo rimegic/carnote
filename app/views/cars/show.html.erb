@@ -1,0 +1,305 @@
+<!-- Breadcrumb -->
+<div class="bg-gray-50 py-4">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="flex" aria-label="Breadcrumb">
+      <ol class="flex items-center space-x-4">
+        <li>
+          <%= link_to "홈", root_path, class: "text-gray-500 hover:text-gray-700" %>
+        </li>
+        <li>
+          <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z"/>
+          </svg>
+        </li>
+        <li>
+          <%= link_to "차량검색", cars_path, class: "text-gray-500 hover:text-gray-700" %>
+        </li>
+        <li>
+          <svg class="flex-shrink-0 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z"/>
+          </svg>
+        </li>
+        <li class="text-gray-900 font-medium">
+          <%= @car.make %> <%= @car.model %>
+        </li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="lg:grid lg:grid-cols-2 lg:gap-8">
+    <!-- Image Gallery -->
+    <div class="mb-8 lg:mb-0">
+      <% if @car.images.attached? %>
+        <div class="space-y-4">
+          <!-- Main Image -->
+          <div class="aspect-w-4 aspect-h-3">
+            <%= image_tag @car.images.first.representation(resize_to_limit: [800, 600]), class: "w-full h-96 object-cover rounded-lg shadow-lg", id: "main-image" %>
+          </div>
+          
+          <!-- Thumbnail Gallery -->
+          <% if @car.images.count > 1 %>
+            <div class="grid grid-cols-4 gap-2">
+              <% @car.images.each_with_index do |image, index| %>
+                <%= image_tag image.representation(resize_to_limit: [200, 150]), 
+                    class: "w-full h-20 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity #{'ring-2 ring-blue-500' if index == 0}", 
+                    onclick: "document.getElementById('main-image').src = this.src; document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('ring-2', 'ring-blue-500')); this.classList.add('ring-2', 'ring-blue-500');",
+                    class_name: "thumbnail" %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <% 
+          # 기본 자동차 이미지 사용 (차량 ID를 기반으로 선택)
+          default_images = ["car_1.jpg", "car_2.jpg", "car_3.jpg", "car_4.jpg", "car_5.jpg", "car_6.jpg"]
+          image_name = default_images[@car.id % default_images.length]
+        %>
+        <div class="space-y-4">
+          <div class="aspect-w-4 aspect-h-3">
+            <img src="/generated_images/<%= image_name %>" alt="<%= @car.make %> <%= @car.model %>" class="w-full h-96 object-cover rounded-lg shadow-lg">
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Car Details -->
+    <div>
+      <!-- Header -->
+      <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2"><%= @car.make %> <%= @car.model %></h1>
+        <div class="flex items-center space-x-4 text-gray-600">
+          <span><%= @car.year %>년</span>
+          <span>•</span>
+          <span><%= number_with_delimiter(@car.mileage) %>km</span>
+          <span>•</span>
+          <span><%= @car.color %></span>
+        </div>
+      </div>
+
+      <!-- Price -->
+      <div class="mb-6">
+        <div class="text-3xl font-bold text-blue-600 mb-2">₩<%= number_to_currency(@car.price, precision: 0, unit: "") %></div>
+        <p class="text-gray-600">부가세 포함</p>
+      </div>
+
+      <!-- Key Features -->
+      <div class="mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-3">주요 정보</h3>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <div class="text-sm text-gray-600">연식</div>
+            <div class="font-semibold"><%= @car.year %>년</div>
+          </div>
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <div class="text-sm text-gray-600">주행거리</div>
+            <div class="font-semibold"><%= number_with_delimiter(@car.mileage) %>km</div>
+          </div>
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <div class="text-sm text-gray-600">색상</div>
+            <div class="font-semibold"><%= @car.color %></div>
+          </div>
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <div class="text-sm text-gray-600">판매자</div>
+            <div class="font-semibold"><%= @car.user.email.split('@').first %></div>
+          </div>
+        </div>
+      </div>
+
+  <!-- Reviews Section -->
+  <div class="mt-12">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold text-gray-900">리뷰</h2>
+      <% if @car.reviews.any? %>
+        <div class="flex items-center space-x-2">
+          <div class="flex items-center">
+            <span class="text-yellow-400 text-lg">★</span>
+            <span class="text-lg font-semibold text-gray-900 ml-1"><%= @car.average_rating %></span>
+          </div>
+          <span class="text-gray-600">(<%= @car.reviews_count %>개 리뷰)</span>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Write Review -->
+    <% if user_signed_in? %>
+      <div class="bg-white rounded-lg shadow-sm border p-6 mb-8">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">리뷰 작성</h3>
+        <%= form_with(model: [@car, Review.new], local: true, class: "space-y-4") do |form| %>
+          <div>
+            <%= form.label :rating, "평점", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <div class="flex space-x-1">
+              <% (1..5).each do |i| %>
+                <button type="button" class="star-rating text-2xl text-gray-300 hover:text-yellow-400 focus:outline-none" data-rating="<%= i %>">★</button>
+              <% end %>
+            </div>
+            <%= form.hidden_field :rating, id: "rating_input" %>
+          </div>
+          <div>
+            <%= form.label :comment, "리뷰 내용", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= form.text_area :comment, rows: 4, class: "w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent", placeholder: "이 차량에 대한 솔직한 리뷰를 남겨주세요." %>
+          </div>
+          <%= form.submit "리뷰 등록", class: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors" %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="bg-gray-50 rounded-lg p-6 mb-8 text-center">
+        <p class="text-gray-600 mb-4">리뷰를 작성하려면 로그인이 필요합니다.</p>
+        <%= link_to "로그인하기", new_user_session_path, class: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors" %>
+      </div>
+    <% end %>
+
+    <!-- Reviews List -->
+    <% if @car.reviews.any? %>
+      <div class="space-y-6">
+        <% @reviews.each do |review| %>
+          <div class="bg-white rounded-lg shadow-sm border p-6">
+            <div class="flex items-start justify-between mb-3">
+              <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span class="text-sm font-medium text-blue-600"><%= review.user.email.first.upcase %></span>
+                </div>
+                <div>
+                  <p class="font-medium text-gray-900"><%= review.user.email.split('@').first %></p>
+                  <div class="flex items-center space-x-2">
+                    <div class="flex">
+                      <% review.rating.times do %>
+                        <span class="text-yellow-400">★</span>
+                      <% end %>
+                      <% (5 - review.rating).times do %>
+                        <span class="text-gray-300">★</span>
+                      <% end %>
+                    </div>
+                    <span class="text-sm text-gray-500"><%= time_ago_in_words(review.created_at) %> 전</span>
+                  </div>
+                </div>
+              </div>
+              <% if user_signed_in? && review.user == current_user %>
+                <%= link_to car_review_path(@car, review), data: { turbo_method: :delete, turbo_confirm: "정말로 이 리뷰를 삭제하시겠습니까?" }, class: "text-gray-400 hover:text-red-500" do %>
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                <% end %>
+              <% end %>
+            </div>
+            <p class="text-gray-700 leading-relaxed"><%= review.comment %></p>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">아직 리뷰가 없습니다</h3>
+        <p class="mt-1 text-sm text-gray-500">이 차량에 대한 첫 번째 리뷰를 작성해보세요.</p>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const stars = document.querySelectorAll('.star-rating');
+  const ratingInput = document.getElementById('rating_input');
+  
+  stars.forEach((star, index) => {
+    star.addEventListener('click', function() {
+      const rating = index + 1;
+      ratingInput.value = rating;
+      
+      stars.forEach((s, i) => {
+        if (i < rating) {
+          s.classList.remove('text-gray-300');
+          s.classList.add('text-yellow-400');
+        } else {
+          s.classList.remove('text-yellow-400');
+          s.classList.add('text-gray-300');
+        }
+      });
+    });
+    
+    star.addEventListener('mouseenter', function() {
+      const rating = index + 1;
+      stars.forEach((s, i) => {
+        if (i < rating) {
+          s.classList.add('text-yellow-400');
+        } else {
+          s.classList.remove('text-yellow-400');
+        }
+      });
+    });
+  });
+  
+  document.querySelector('.star-rating').parentElement.addEventListener('mouseleave', function() {
+    const currentRating = parseInt(ratingInput.value) || 0;
+    stars.forEach((s, i) => {
+      if (i < currentRating) {
+        s.classList.add('text-yellow-400');
+        s.classList.remove('text-gray-300');
+      } else {
+        s.classList.remove('text-yellow-400');
+        s.classList.add('text-gray-300');
+      }
+    });
+  });
+});
+</script>
+
+      <!-- Action Buttons -->
+      <div class="space-y-3 mb-6">
+        <% if user_signed_in? %>
+          <% unless @car.user == current_user %>
+            <%= link_to "판매자에게 문의하기", conversations_path(sender_id: current_user.id, recipient_id: @car.user.id), method: :post, class: "w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold text-center block transition-colors" %>
+          <% end %>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <% if current_user.favorite_cars.include?(@car) %>
+              <%= link_to "관심 해제", favorite_path(@car), data: { turbo_method: :delete }, class: "bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg font-medium text-center transition-colors" %>
+            <% else %>
+              <%= link_to "관심 등록", favorites_path(car_id: @car.id), data: { turbo_method: :post }, class: "bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg font-medium text-center transition-colors" %>
+            <% end %>
+            
+            <% comparison_cars = session[:comparison_cars] || [] %>
+            <% if comparison_cars.include?(@car.id) %>
+              <%= link_to "비교 해제", remove_car_comparisons_path(car_id: @car.id), data: { turbo_method: :delete }, class: "bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg font-medium text-center transition-colors" %>
+            <% else %>
+              <%= link_to "비교 추가", add_car_comparisons_path(car_id: @car.id), data: { turbo_method: :post }, class: "bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg font-medium text-center transition-colors" %>
+            <% end %>
+          </div>
+        <% else %>
+          <%= link_to "로그인 후 문의하기", new_user_session_path, class: "w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold text-center block transition-colors" %>
+        <% end %>
+      </div>
+
+      <!-- Price Alert Section -->
+      <% if user_signed_in? && @car.user != current_user %>
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+          <h3 class="text-sm font-semibold text-yellow-800 mb-2">가격 알림</h3>
+          <% existing_alert = current_user.price_alerts.find_by(car: @car) %>
+          <% if existing_alert %>
+            <p class="text-yellow-700 text-sm mb-2">
+              목표 가격 ₩<%= number_to_currency(existing_alert.target_price, precision: 0, unit: "") %>로 설정됨
+            </p>
+            <%= link_to "알림 해제", price_alert_path(existing_alert), data: { turbo_method: :delete }, class: "text-red-600 hover:text-red-800 text-sm font-medium" %>
+          <% else %>
+            <%= form_with(model: [@car, PriceAlert.new], local: true, class: "flex space-x-2") do |form| %>
+              <%= form.number_field :target_price, placeholder: "목표 가격", class: "flex-1 px-3 py-2 border border-gray-300 rounded text-sm", step: 1000, min: 1000 %>
+              <%= form.submit "설정", class: "bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded text-sm font-medium" %>
+            <% end %>
+            <p class="text-yellow-600 text-xs mt-1">가격이 목표 금액 이하로 내려가면 알림을 받습니다</p>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Description Section -->
+  <div class="mt-12">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">차량 설명</h2>
+    <div class="bg-white rounded-lg shadow-sm border p-6">
+      <p class="text-gray-700 leading-relaxed whitespace-pre-line"><%= @car.description %></p>
+    </div>
+  </div>

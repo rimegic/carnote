@@ -1,0 +1,27 @@
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <% recipient = @conversation.sender == current_user ? @conversation.recipient : @conversation.sender %>
+  <h1 class="text-4xl font-bold mb-8 text-gray-900 dark:text-white">대화: <%= recipient.email %></h1>
+
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
+    <div class="h-96 overflow-y-auto mb-6 p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700">
+      <% @conversation.messages.each do |message| %>
+        <div class="mb-4 <%= message.user == current_user ? 'text-right' : 'text-left' %>">
+          <p class="text-sm <%= message.user == current_user ? 'text-indigo-600 dark:text-indigo-400' : 'text-gray-600 dark:text-gray-300' %> font-semibold"><%= message.user.email %></p>
+          <div class="inline-block p-3 rounded-lg <%= message.user == current_user ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-100' : 'bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-100' %> shadow-sm">
+            <%= message.body %>
+          </div>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-1"><%= time_ago_in_words(message.created_at) %> 전</p>
+        </div>
+      <% end %>
+    </div>
+
+    <%= form_with(model: [@conversation, @message], local: true, class: "space-y-4") do |form| %>
+      <div>
+        <%= form.text_area :body, rows: 3, class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-700 dark:text-white dark:border-gray-600", placeholder: "메시지를 입력하세요..." %>
+      </div>
+      <%= form.submit "메시지 전송", class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400" %>
+    <% end %>
+  </div>
+
+  <%= link_to "메시지함으로 돌아가기", conversations_path, class: "text-indigo-600 hover:text-indigo-500 font-semibold" %>
+</div>

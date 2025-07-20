@@ -1,0 +1,62 @@
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <h1 class="text-4xl font-bold mb-8 text-gray-900 dark:text-white">내 가격 알림</h1>
+
+  <% if @price_alerts.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% @price_alerts.each do |alert| %>
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+          <% if alert.car.images.attached? %>
+            <%= image_tag alert.car.images.first.representation(resize_to_limit: [400, 200]), class: "w-full h-32 object-cover" %>
+          <% else %>
+            <div class="w-full h-32 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+              <span class="text-gray-500 dark:text-gray-400">이미지 없음</span>
+            </div>
+          <% end %>
+          
+          <div class="p-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              <%= alert.car.display_name %>
+            </h3>
+            
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-300">현재 가격:</span>
+                <span class="font-semibold text-gray-900 dark:text-white">₩<%= number_to_currency(alert.car.price, precision: 0, unit: "") %></span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-300">목표 가격:</span>
+                <span class="font-semibold text-green-600 dark:text-green-400">₩<%= number_to_currency(alert.target_price, precision: 0, unit: "") %></span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-300">상태:</span>
+                <% if alert.active? %>
+                  <span class="text-blue-600 dark:text-blue-400 font-medium">활성</span>
+                <% else %>
+                  <span class="text-gray-500 dark:text-gray-400">알림 완료</span>
+                <% end %>
+              </div>
+            </div>
+            
+            <div class="mt-4 flex justify-between items-center">
+              <%= link_to "차량 보기", car_path(alert.car), class: "bg-indigo-500 hover:bg-indigo-600 text-white px-3 py-1 rounded text-sm" %>
+              <%= link_to "삭제", price_alert_path(alert), data: { turbo_method: :delete, turbo_confirm: "정말로 이 가격 알림을 삭제하시겠습니까?" }, class: "bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center py-12">
+      <div class="mx-auto h-24 w-24 text-gray-400">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+        </svg>
+      </div>
+      <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">설정된 가격 알림이 없습니다</h3>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">관심 있는 차량의 상세 페이지에서 가격 알림을 설정해보세요.</p>
+      <div class="mt-6">
+        <%= link_to "차량 둘러보기", cars_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,126 @@
+<!-- Quote Popup Content -->
+<div class="p-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-gray-900">할부 견적서</h2>
+    <button onclick="document.getElementById('quote-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Car Info -->
+  <div class="bg-blue-50 rounded-lg p-4 mb-6">
+    <div class="flex items-center space-x-4">
+      <div class="w-20 h-16 bg-blue-200 rounded-lg flex items-center justify-center">
+        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900"><%= params[:brand] %> <%= params[:model] %></h3>
+        <p class="text-blue-600 font-bold">₩<%= number_with_delimiter(params[:price]) %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estimate Details -->
+  <div class="space-y-4 mb-6">
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
+      <div class="flex justify-between items-center mb-3">
+        <h4 class="text-lg font-semibold text-gray-900"><%= params[:bank] %></h4>
+        <span class="bg-blue-100 text-blue-800 text-sm font-medium px-2 py-1 rounded"><%= params[:estimate_type] %></span>
+      </div>
+      
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <p class="text-sm text-gray-600">월 납입금</p>
+          <p class="text-xl font-bold text-blue-600">₩<%= number_with_delimiter(params[:monthly_payment]) %></p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-600">연 이율</p>
+          <p class="text-lg font-semibold text-gray-900">2.9%</p>
+        </div>
+      </div>
+
+      <div class="border-t pt-4">
+        <h5 class="font-semibold text-gray-900 mb-2">상세 조건</h5>
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <p class="text-gray-600">차량 가격</p>
+            <p class="font-medium">₩<%= number_with_delimiter(params[:price]) %></p>
+          </div>
+          <div>
+            <p class="text-gray-600">할부 기간</p>
+            <p class="font-medium">60개월</p>
+          </div>
+          <div>
+            <p class="text-gray-600">선수금</p>
+            <p class="font-medium">₩0</p>
+          </div>
+          <div>
+            <p class="text-gray-600">할부 원금</p>
+            <p class="font-medium">₩<%= number_with_delimiter(params[:price]) %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Benefits -->
+    <div class="bg-green-50 rounded-lg p-4">
+      <h5 class="font-semibold text-green-800 mb-2">🎁 특별 혜택</h5>
+      <ul class="text-sm text-green-700 space-y-1">
+        <li>• 카노트 제휴 할인 0.2% 추가 금리 인하</li>
+        <li>• 수수료 면제 (일반 30만원)</li>
+        <li>• 중도상환 수수료 면제</li>
+        <li>• 카노트 캐시백 5% 적립</li>
+      </ul>
+    </div>
+
+    <!-- Payment Schedule Preview -->
+    <div class="bg-gray-50 rounded-lg p-4">
+      <h5 class="font-semibold text-gray-900 mb-3">납입 일정 (처음 3개월)</h5>
+      <div class="space-y-2 text-sm">
+        <div class="flex justify-between">
+          <span>1회차 (2024.02)</span>
+          <span class="font-medium">₩<%= number_with_delimiter(params[:monthly_payment]) %></span>
+        </div>
+        <div class="flex justify-between">
+          <span>2회차 (2024.03)</span>
+          <span class="font-medium">₩<%= number_with_delimiter(params[:monthly_payment]) %></span>
+        </div>
+        <div class="flex justify-between">
+          <span>3회차 (2024.04)</span>
+          <span class="font-medium">₩<%= number_with_delimiter(params[:monthly_payment]) %></span>
+        </div>
+        <div class="border-t pt-2 text-gray-600">
+          <span>... 총 60회 납입</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="space-y-3">
+    <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors">
+      📞 전문 상담사 연결 (무료)
+    </button>
+    <div class="grid grid-cols-2 gap-3">
+      <button class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors">
+        📄 견적서 저장
+      </button>
+      <button class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors">
+        📤 견적서 공유
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer Note -->
+  <div class="mt-6 p-3 bg-yellow-50 rounded-lg">
+    <p class="text-xs text-yellow-800">
+      ⚠️ 본 견적은 예상 금액이며, 실제 승인 금리는 개인 신용도에 따라 달라질 수 있습니다.
+      정확한 조건은 전문 상담사와 상담 후 확정됩니다.
+    </p>
+  </div>
+</div>

@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  make: Toyota
+  model: Camry
+  year: 2020
+  price: 25000.00
+  description: Great car in excellent condition
+  mileage: 50000
+  color: Blue
+  user: one
+
+two:
+  make: Honda
+  model: Civic
+  year: 2019
+  price: 22000.00
+  description: Reliable and fuel efficient
+  mileage: 60000
+  color: Red
+  user: two

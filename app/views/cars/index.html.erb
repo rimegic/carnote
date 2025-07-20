@@ -1,0 +1,125 @@
+<!-- Page Header -->
+<div class="bg-white border-b border-gray-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h1 class="text-3xl font-bold text-gray-900">신차 견적</h1>
+    <p class="mt-2 text-gray-600">전국 700개 전시장의 실시간 할인 정보를 확인하세요</p>
+  </div>
+</div>
+
+<!-- Search Filters -->
+<div class="bg-gray-50 py-6">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <%= search_form_for @q, url: cars_path, method: :get, class: "bg-white rounded-lg shadow-sm p-6" do |f| %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <div>
+          <%= f.text_field :make_cont, placeholder: "제조사", class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+        </div>
+        <div>
+          <%= f.text_field :model_cont, placeholder: "모델명", class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+        </div>
+        <div>
+          <%= f.number_field :price_lteq, placeholder: "최대 가격", class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+        </div>
+        <div>
+          <%= f.number_field :year_gteq, placeholder: "최소 연식", class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+        </div>
+      </div>
+      
+      <!-- Advanced Filters (Collapsible) -->
+      <div class="border-t pt-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div>
+            <%= f.number_field :mileage_lteq, placeholder: "최대 주행거리", class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+          </div>
+          <div>
+            <%= f.text_field :color_cont, placeholder: "색상", class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+          </div>
+          <div class="flex items-end">
+            <%= f.submit "검색", class: "w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors font-medium" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Results Section -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Results Header -->
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h2 class="text-xl font-semibold text-gray-900">검색 결과</h2>
+      <p class="text-gray-600">총 <%= @pagination[:total_count] %>대의 차량이 검색되었습니다</p>
+    </div>
+    
+    <!-- Comparison Cart -->
+    <% comparison_cars = session[:comparison_cars] || [] %>
+    <% if comparison_cars.any? %>
+      <div class="bg-blue-50 border border-blue-200 rounded-lg px-4 py-2">
+        <span class="text-blue-800 font-medium">비교 목록: <%= comparison_cars.length %>개</span>
+        <%= link_to "비교하기", car_comparisons_path, class: "ml-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm" %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Car Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <% @cars.each_with_index do |car, index| %>
+      <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+        <!-- Car Image -->
+        <div class="relative">
+          <% if car.images.attached? %>
+            <%= image_tag car.images.first.representation(resize_to_limit: [400, 250]), class: "w-full h-48 object-cover" %>
+          <% else %>
+            <% 
+              # 기본 자동차 이미지들을 순환하여 사용
+              default_images = ["car_1.jpg", "car_2.jpg", "car_3.jpg", "car_4.jpg", "car_5.jpg", "car_6.jpg"]
+              image_name = default_images[index % default_images.length]
+            %>
+            <img src="/generated_images/<%= image_name %>" alt="<%= car.make %> <%= car.model %>" class="w-full h-48 object-cover">
+          <% end %>
+          
+          <!-- Comparison Button -->
+          <div class="absolute top-2 right-2">
+            <% if comparison_cars.include?(car.id) %>
+              <%= link_to remove_car_comparisons_path(car_id: car.id), data: { turbo_method: :delete }, class: "bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-lg" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              <% end %>
+            <% else %>
+              <%= link_to add_car_comparisons_path(car_id: car.id), data: { turbo_method: :post }, class: "bg-white hover:bg-gray-50 text-gray-700 p-2 rounded-full shadow-lg border" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Car Info -->
+        <div class="p-4">
+          <h3 class="text-lg font-semibold text-gray-900 mb-1"><%= car.make %> <%= car.model %></h3>
+          <p class="text-gray-600 text-sm mb-3"><%= car.year %>년 • <%= number_with_delimiter(car.mileage) %>km • <%= car.color %></p>
+          
+          <!-- Price and Rating -->
+          <div class="flex justify-between items-center mb-3">
+            <span class="text-xl font-bold text-blue-600">₩<%= number_to_currency(car.price, precision: 0, unit: "") %></span>
+            <% if car.reviews.any? %>
+              <div class="flex items-center">
+                <span class="text-yellow-400 text-sm">★</span>
+                <span class="text-sm text-gray-600 ml-1"><%= car.average_rating %></span>
+              </div>
+            <% end %>
+          </div>
+          
+          <!-- Action Button -->
+          <%= link_to "자세히 보기", car_path(car), class: "block w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors font-medium" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Pagination -->
+  <%= render 'shared/pagination', pagination: @pagination %>
+</div>

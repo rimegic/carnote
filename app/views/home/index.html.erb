@@ -1,0 +1,557 @@
+<!-- Hero Section -->
+<section class="relative bg-gradient-to-br from-blue-50 to-indigo-100 py-20 overflow-hidden">
+  <!-- Background Car Image -->
+  <div class="absolute inset-0 z-0">
+    <img src="/generated_images/hero_car_bg.jpg" alt="Hero Car" class="w-full h-full object-cover opacity-10">
+  </div>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="text-center">
+      <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+        신차 구매의 새로운 기준,<br>
+        <span class="text-blue-600">카노트</span>에서 시작하세요
+      </h1>
+      <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+        전국 700개 전시장, 8천명의 딜러 네트워크를 통한 실시간 할인 정보<br>
+        투명한 비교 견적과 최적의 금융 상품으로 스마트한 신차 구매를 경험하세요.
+      </p>
+      
+      <!-- Quote Request Form -->
+      <div class="max-w-4xl mx-auto mb-12">
+        <div class="bg-white rounded-lg shadow-lg p-6">
+          <h3 class="text-xl font-semibold text-gray-900 mb-4">무료 신차 견적 받기</h3>
+          <%= form_with url: cars_path, method: :get, local: true, id: "quote-form", html: { autocomplete: "off" } do |f| %>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <%= f.select "brand", options_for_select([
+                  ["브랜드 선택", ""],
+                  ["현대", "현대"],
+                  ["기아", "기아"],
+                  ["제네시스", "제네시스"],
+                  ["BMW", "BMW"],
+                  ["벤츠", "벤츠"],
+                  ["아우디", "아우디"],
+                  ["볼보", "볼보"],
+                  ["렉서스", "렉서스"]
+                ]), {}, { 
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                  id: "brand-select",
+                  onchange: "updateModels()",
+                  autocomplete: "off"
+                } %>
+              </div>
+              <div>
+                <%= f.select "model", options_for_select([["모델 선택", ""]]), {}, { 
+                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                  id: "model-select",
+                  onchange: "updatePrice()",
+                  disabled: true,
+                  autocomplete: "off"
+                } %>
+              </div>
+              <div>
+                <input type="text" id="price-display" placeholder="예상 가격" class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50" readonly>
+              </div>
+            </div>
+            
+            <!-- Additional Options -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <%= f.select "fuel_type", options_for_select([
+                  ["연료 타입", ""],
+                  ["가솔린", "가솔린"],
+                  ["디젤", "디젤"],
+                  ["하이브리드", "하이브리드"],
+                  ["전기", "전기"],
+                  ["수소", "수소"]
+                ]), {}, { class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" } %>
+              </div>
+              <div>
+                <%= f.select "budget", options_for_select([
+                  ["예산 범위", ""],
+                  ["2천만원 이하", "20000000"],
+                  ["2천-3천만원", "30000000"],
+                  ["3천-4천만원", "40000000"],
+                  ["4천-5천만원", "50000000"],
+                  ["5천만원 이상", "50000001"]
+                ]), {}, { class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" } %>
+              </div>
+            </div>
+            
+            <div class="text-center">
+              <button type="button" id="estimate-button" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg text-lg font-semibold transition-colors cursor-pointer">
+                무료 견적 받기
+              </button>
+            </div>
+          <% end %>
+          <p class="text-sm text-gray-500 mt-3">* 견적 요청 후 24시간 내 복수의 딜러가 경쟁 견적을 제시합니다</p>
+        </div>
+      </div>
+
+      <script>
+        let isInitialized = false;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+          if (!isInitialized) {
+            initializePage();
+            isInitialized = true;
+          }
+        });
+
+        // 페이지 표시 시에도 초기화 (뒤로가기 대응)
+        window.addEventListener('pageshow', function(event) {
+          // 약간의 지연을 두고 초기화 (브라우저 복원 완료 후)
+          setTimeout(function() {
+            if (!isInitialized) {
+              initializePage();
+              isInitialized = true;
+            } else {
+              // 이미 초기화된 경우 폼만 리셋
+              safeResetForm();
+            }
+          }, 100);
+        });
+
+        function initializePage() {
+          // 폼 완전 초기화
+          safeResetForm();
+          
+          // 견적 버튼 이벤트 리스너 추가
+          const estimateButton = document.getElementById('estimate-button');
+          if (estimateButton) {
+            estimateButton.addEventListener('click', goToEstimate);
+          }
+        }
+
+        function safeResetForm() {
+          try {
+            // DOM 조작 전 모든 이벤트 리스너 임시 제거
+            const brandSelect = document.getElementById('brand-select');
+            const modelSelect = document.getElementById('model-select');
+            const priceDisplay = document.getElementById('price-display');
+            const estimateButton = document.getElementById('estimate-button');
+            
+            // 이벤트 리스너 임시 제거
+            if (brandSelect) {
+              brandSelect.onchange = null;
+            }
+            if (modelSelect) {
+              modelSelect.onchange = null;
+            }
+            
+            // 폼 필드 초기화
+            if (brandSelect) {
+              brandSelect.value = '';
+              brandSelect.selectedIndex = 0;
+            }
+            
+            if (modelSelect) {
+              modelSelect.innerHTML = '<option value="">모델 선택</option>';
+              modelSelect.value = '';
+              modelSelect.selectedIndex = 0;
+              modelSelect.disabled = true;
+            }
+            
+            if (priceDisplay) {
+              priceDisplay.value = '';
+            }
+            
+            if (estimateButton) {
+              estimateButton.disabled = false;
+              estimateButton.textContent = '무료 견적 받기';
+            }
+            
+            // 추가 필드들 초기화
+            const fuelTypeSelect = document.querySelector('select[name="fuel_type"]');
+            const budgetSelect = document.querySelector('select[name="budget"]');
+            if (fuelTypeSelect) {
+              fuelTypeSelect.value = '';
+              fuelTypeSelect.selectedIndex = 0;
+            }
+            if (budgetSelect) {
+              budgetSelect.value = '';
+              budgetSelect.selectedIndex = 0;
+            }
+            
+            // 이벤트 리스너 재등록
+            setTimeout(function() {
+              if (brandSelect) {
+                brandSelect.onchange = updateModels;
+              }
+              if (modelSelect) {
+                modelSelect.onchange = updatePrice;
+              }
+            }, 50);
+            
+          } catch (error) {
+            console.log('Form reset error:', error);
+          }
+        }
+
+        const carData = {
+          "현대": {
+            "아반떼": { price: "2,090만원~", range: "2,090~2,490만원" },
+            "쏘나타": { price: "2,899만원~", range: "2,899~3,599만원" },
+            "그랜저": { price: "3,520만원~", range: "3,520~4,280만원" },
+            "아이오닉5": { price: "5,200만원~", range: "5,200~5,900만원" },
+            "아이오닉6": { price: "5,290만원~", range: "5,290~6,200만원" },
+            "투싼": { price: "2,755만원~", range: "2,755~3,455만원" },
+            "싼타페": { price: "3,515만원~", range: "3,515~4,515만원" },
+            "팰리세이드": { price: "3,838만원~", range: "3,838~4,738만원" },
+            "캐스퍼": { price: "1,385만원~", range: "1,385~1,695만원" },
+            "베뉴": { price: "1,969만원~", range: "1,969~2,369만원" }
+          },
+          "기아": {
+            "K3": { price: "1,955만원~", range: "1,955~2,555만원" },
+            "K5": { price: "2,760만원~", range: "2,760~3,460만원" },
+            "K8": { price: "3,305만원~", range: "3,305~4,205만원" },
+            "K9": { price: "4,630만원~", range: "4,630~6,030만원" },
+            "EV6": { price: "4,880만원~", range: "4,880~6,280만원" },
+            "EV9": { price: "7,300만원~", range: "7,300~8,900만원" },
+            "셀토스": { price: "2,268만원~", range: "2,268~2,968만원" },
+            "스포티지": { price: "2,755만원~", range: "2,755~3,655만원" },
+            "쏘렌토": { price: "3,193만원~", range: "3,193~4,293만원" },
+            "모하비": { price: "4,173만원~", range: "4,173~5,073만원" },
+            "레이": { price: "1,435만원~", range: "1,435~1,735만원" },
+            "모닝": { price: "1,285만원~", range: "1,285~1,585만원" }
+          },
+          "제네시스": {
+            "G70": { price: "4,500만원~", range: "4,500~6,200만원" },
+            "G80": { price: "5,405만원~", range: "5,405~7,605만원" },
+            "G90": { price: "8,700만원~", range: "8,700~12,400만원" },
+            "GV70": { price: "5,030만원~", range: "5,030~7,230만원" },
+            "GV80": { price: "6,930만원~", range: "6,930~9,630만원" },
+            "GV60": { price: "5,990만원~", range: "5,990~6,890만원" },
+            "전동화 G80": { price: "7,755만원~", range: "7,755~8,655만원" },
+            "전동화 GV70": { price: "6,580만원~", range: "6,580~7,480만원" }
+          },
+          "BMW": {
+            "1시리즈": { price: "4,200만원~", range: "4,200~5,200만원" },
+            "2시리즈": { price: "4,890만원~", range: "4,890~6,890만원" },
+            "3시리즈": { price: "5,500만원~", range: "5,500~8,500만원" },
+            "4시리즈": { price: "6,200만원~", range: "6,200~9,200만원" },
+            "5시리즈": { price: "7,400만원~", range: "7,400~12,400만원" },
+            "7시리즈": { price: "13,900만원~", range: "13,900~25,900만원" },
+            "X1": { price: "4,750만원~", range: "4,750~6,250만원" },
+            "X3": { price: "6,200만원~", range: "6,200~9,200만원" },
+            "X5": { price: "8,900만원~", range: "8,900~14,900만원" },
+            "X7": { price: "12,400만원~", range: "12,400~20,400만원" },
+            "iX3": { price: "7,700만원~", range: "7,700~8,700만원" },
+            "i4": { price: "6,999만원~", range: "6,999~8,999만원" }
+          },
+          "벤츠": {
+            "A클래스": { price: "4,200만원~", range: "4,200~6,200만원" },
+            "C클래스": { price: "5,500만원~", range: "5,500~8,500만원" },
+            "E클래스": { price: "7,200만원~", range: "7,200~12,200만원" },
+            "S클래스": { price: "13,500만원~", range: "13,500~28,500만원" },
+            "GLA": { price: "4,750만원~", range: "4,750~6,750만원" },
+            "GLB": { price: "5,200만원~", range: "5,200~7,200만원" },
+            "GLC": { price: "6,400만원~", range: "6,400~9,400만원" },
+            "GLE": { price: "8,900만원~", range: "8,900~15,900만원" },
+            "GLS": { price: "12,800만원~", range: "12,800~22,800만원" },
+            "EQA": { price: "5,999만원~", range: "5,999~6,999만원" },
+            "EQB": { price: "6,499만원~", range: "6,499~7,499만원" },
+            "EQC": { price: "8,999만원~", range: "8,999~9,999만원" }
+          },
+          "아우디": {
+            "A3": { price: "4,200만원~", range: "4,200~5,700만원" },
+            "A4": { price: "5,500만원~", range: "5,500~7,500만원" },
+            "A6": { price: "7,200만원~", range: "7,200~10,200만원" },
+            "A8": { price: "12,900만원~", range: "12,900~22,900만원" },
+            "Q2": { price: "4,100만원~", range: "4,100~5,100만원" },
+            "Q3": { price: "4,890만원~", range: "4,890~6,390만원" },
+            "Q5": { price: "6,400만원~", range: "6,400~8,900만원" },
+            "Q7": { price: "9,200만원~", range: "9,200~14,200만원" },
+            "Q8": { price: "10,500만원~", range: "10,500~16,500만원" },
+            "e-tron": { price: "9,999만원~", range: "9,999~12,999만원" },
+            "e-tron GT": { price: "13,999만원~", range: "13,999~19,999만원" }
+          },
+          "볼보": {
+            "XC40": { price: "4,590만원~", range: "4,590~6,090만원" },
+            "XC60": { price: "6,200만원~", range: "6,200~8,700만원" },
+            "XC90": { price: "8,200만원~", range: "8,200~12,200만원" },
+            "S60": { price: "4,990만원~", range: "4,990~6,490만원" },
+            "S90": { price: "6,500만원~", range: "6,500~8,500만원" },
+            "XC40 리차지": { price: "5,999만원~", range: "5,999~6,999만원" },
+            "XC60 리차지": { price: "7,499만원~", range: "7,499~8,499만원" },
+            "XC90 리차지": { price: "9,499만원~", range: "9,499~11,499만원" }
+          },
+          "렉서스": {
+            "IS": { price: "4,700만원~", range: "4,700~6,200만원" },
+            "ES": { price: "5,500만원~", range: "5,500~7,000만원" },
+            "LS": { price: "11,900만원~", range: "11,900~19,900만원" },
+            "NX": { price: "5,200만원~", range: "5,200~7,200만원" },
+            "RX": { price: "7,200만원~", range: "7,200~10,200만원" },
+            "GX": { price: "9,500만원~", range: "9,500~11,500만원" },
+            "LX": { price: "13,500만원~", range: "13,500~16,500만원" },
+            "UX": { price: "4,200만원~", range: "4,200~5,200만원" },
+            "LC": { price: "12,900만원~", range: "12,900~15,900만원" }
+          }
+        };
+
+        function updateModels() {
+          try {
+            const brandSelect = document.getElementById('brand-select');
+            const modelSelect = document.getElementById('model-select');
+            const priceDisplay = document.getElementById('price-display');
+            
+            if (!brandSelect || !modelSelect || !priceDisplay) return;
+            
+            const selectedBrand = brandSelect.value;
+            
+            // 안전한 모델 선택 초기화
+            modelSelect.innerHTML = '<option value="">모델 선택</option>';
+            modelSelect.value = '';
+            modelSelect.selectedIndex = 0;
+            priceDisplay.value = '';
+            
+            if (selectedBrand && carData[selectedBrand]) {
+              modelSelect.disabled = false;
+              
+              // 해당 브랜드의 모델들 추가
+              Object.keys(carData[selectedBrand]).forEach(model => {
+                const option = document.createElement('option');
+                option.value = model;
+                option.textContent = model;
+                modelSelect.appendChild(option);
+              });
+            } else {
+              modelSelect.disabled = true;
+            }
+            
+          } catch (error) {
+            console.log('Update models error:', error);
+          }
+        }
+
+        function updatePrice() {
+          const brandSelect = document.getElementById('brand-select');
+          const modelSelect = document.getElementById('model-select');
+          const priceDisplay = document.getElementById('price-display');
+          
+          const selectedBrand = brandSelect.value;
+          const selectedModel = modelSelect.value;
+          
+          // 빈 값이거나 "모델 선택"인 경우 가격 표시 안함
+          if (selectedBrand && selectedModel && selectedModel !== '' && carData[selectedBrand] && carData[selectedBrand][selectedModel]) {
+            priceDisplay.value = carData[selectedBrand][selectedModel].range;
+          } else {
+            priceDisplay.value = '';
+          }
+        }
+
+        function goToEstimate() {
+          // 버튼 중복 클릭 방지
+          const button = event.target;
+          if (button.disabled) return;
+          
+          button.disabled = true;
+          button.textContent = '처리 중...';
+          
+          const brandSelect = document.getElementById('brand-select');
+          const modelSelect = document.getElementById('model-select');
+          
+          const selectedBrand = brandSelect ? brandSelect.value : '';
+          const selectedModel = modelSelect ? modelSelect.value : '';
+          
+          let targetUrl = '/estimates/start';
+          
+          if (selectedBrand && selectedModel) {
+            targetUrl = `/estimates/start?brand=${encodeURIComponent(selectedBrand)}&model=${encodeURIComponent(selectedModel)}`;
+          } else if (selectedBrand) {
+            targetUrl = `/estimates/start?brand=${encodeURIComponent(selectedBrand)}`;
+          }
+          
+          // 약간의 지연 후 페이지 이동 (사용자 피드백)
+          setTimeout(() => {
+            window.location.href = targetUrl;
+          }, 300);
+        }
+      </script>
+
+      <!-- Key Benefits -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div>
+          <div class="text-3xl font-bold text-blue-600">700+</div>
+          <div class="text-gray-600">전국 전시장</div>
+        </div>
+        <div>
+          <div class="text-3xl font-bold text-blue-600">8,000+</div>
+          <div class="text-gray-600">딜러 네트워크</div>
+        </div>
+        <div>
+          <div class="text-3xl font-bold text-blue-600">최대 15%</div>
+          <div class="text-gray-600">할인 혜택</div>
+        </div>
+        <div>
+          <div class="text-3xl font-bold text-blue-600">5%</div>
+          <div class="text-gray-600">오토캐시백</div>
+        </div>
+      </div>
+      
+      <!-- Hero Car Showcase -->
+      <div class="mt-16">
+        <img src="/generated_images/hero_showcase.jpg" alt="카노트 신차 쇼케이스" class="mx-auto rounded-2xl shadow-2xl max-w-4xl w-full">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Popular New Cars Section -->
+<section class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">인기 신차 모델</h2>
+      <p class="text-gray-600">지금 가장 많은 견적 요청을 받고 있는 신차 모델들</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <% Car.includes(:user, :reviews, images_attachments: :blob).order(created_at: :desc).limit(6).each_with_index do |car, index| %>
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow relative">
+          <% if car.images.attached? %>
+            <%= image_tag car.images.first.representation(resize_to_limit: [400, 250]), class: "w-full h-48 object-cover" %>
+          <% else %>
+            <% 
+              # 기본 자동차 이미지들을 순환하여 사용
+              default_images = ["car_1.jpg", "car_2.jpg", "car_3.jpg", "car_4.jpg", "car_5.jpg", "car_6.jpg"]
+              image_name = default_images[index % default_images.length]
+            %>
+            <img src="/generated_images/<%= image_name %>" alt="<%= car.make %> <%= car.model %>" class="w-full h-48 object-cover">
+          <% end %>
+          
+          <!-- Discount Badge -->
+          <div class="absolute top-4 left-4">
+            <span class="bg-red-500 text-white px-2 py-1 rounded text-sm font-semibold">최대 <%= rand(5..15) %>% 할인</span>
+          </div>
+          
+          <div class="p-6">
+            <h3 class="text-xl font-semibold text-gray-900 mb-2"><%= car.make %> <%= car.model %></h3>
+            <p class="text-gray-600 mb-4"><%= car.year %>년형 신차</p>
+            
+            <div class="mb-4">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm text-gray-500">신차 출고가</span>
+                <span class="text-lg text-gray-400 line-through">₩<%= number_to_currency(car.price * 1.1, precision: 0, unit: "") %></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm font-semibold text-blue-600">카노트 최저가</span>
+                <span class="text-2xl font-bold text-blue-600">₩<%= number_to_currency(car.price, precision: 0, unit: "") %></span>
+              </div>
+            </div>
+            
+            <div class="space-y-2">
+              <%= link_to "견적 받기", car_path(car), class: "block w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors font-medium" %>
+              <div class="grid grid-cols-2 gap-2">
+                <button class="text-center border border-gray-300 text-gray-700 py-1 rounded text-sm hover:bg-gray-50">할부 계산</button>
+                <button class="text-center border border-gray-300 text-gray-700 py-1 rounded text-sm hover:bg-gray-50">리스 견적</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="text-center mt-12">
+      <%= link_to "전체 신차 모델 보기", cars_path, class: "inline-flex items-center px-6 py-3 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-colors" %>
+    </div>
+  </div>
+</section>
+
+<!-- Why Choose CARNOTE Section -->
+<section class="py-16 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">왜 카노트를 선택해야 할까요?</h2>
+      <p class="text-gray-600">신차 구매의 새로운 기준, 카노트만의 특별한 혜택</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="text-center">
+        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">비교 견적 시스템</h3>
+        <p class="text-gray-600">복수의 딜러가 경쟁 견적을 제시하여 최저가를 보장합니다</p>
+      </div>
+
+      <div class="text-center">
+        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">오토캐시백</h3>
+        <p class="text-gray-600">카드 결제 시 최대 5% 캐시백으로 추가 할인 혜택을 제공합니다</p>
+      </div>
+
+      <div class="text-center">
+        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">비대면 간편 계약</h3>
+        <p class="text-gray-600">온라인으로 간편하게 상담부터 계약까지 원스톱 서비스</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Financial Products Section -->
+<section class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">다양한 금융 상품</h2>
+      <p class="text-gray-600">할부부터 리스까지, 나에게 맞는 최적의 금융 상품을 찾아보세요</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- 할부 -->
+      <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 text-center">
+        <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">할부</h3>
+        <p class="text-gray-600 mb-4">낮은 금리로 부담 없는 월 납입</p>
+        <div class="text-2xl font-bold text-blue-600 mb-2">연 2.9%~</div>
+        <p class="text-sm text-gray-500">최대 84개월</p>
+      </div>
+
+      <!-- 리스 -->
+      <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 text-center">
+        <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">리스</h3>
+        <p class="text-gray-600 mb-4">낮은 월 납입으로 신차 이용</p>
+        <div class="text-2xl font-bold text-green-600 mb-2">월 30만원~</div>
+        <p class="text-sm text-gray-500">2~4년 약정</p>
+      </div>
+
+      <!-- 장기렌트 -->
+      <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 text-center">
+        <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 mb-2">장기렌트</h3>
+        <p class="text-gray-600 mb-4">보험, 정비까지 올인원 서비스</p>
+        <div class="text-2xl font-bold text-purple-600 mb-2">월 35만원~</div>
+        <p class="text-sm text-gray-500">2~5년 약정</p>
+      </div>
+    </div>
+
+    <div class="text-center mt-12">
+      <button class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg text-lg font-semibold transition-colors">
+        금융 상품 비교하기
+      </button>
+    </div>
+  </div>
+</section>

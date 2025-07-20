@@ -1,0 +1,25 @@
+<% if pagination[:total_pages] > 1 %>
+  <div class="flex items-center justify-center mt-12">
+    <nav class="flex items-center space-x-2">
+      <% if pagination[:has_prev] %>
+        <%= link_to "이전", request.params.merge(page: pagination[:current_page] - 1), class: "px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50" %>
+      <% end %>
+
+      <% start_page = [pagination[:current_page] - 2, 1].max %>
+      <% end_page = [start_page + 4, pagination[:total_pages]].min %>
+      <% start_page = [end_page - 4, 1].max if end_page - start_page < 4 %>
+
+      <% (start_page..end_page).each do |page| %>
+        <% if page == pagination[:current_page] %>
+          <span class="px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-md"><%= page %></span>
+        <% else %>
+          <%= link_to page, request.params.merge(page: page), class: "px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50" %>
+        <% end %>
+      <% end %>
+
+      <% if pagination[:has_next] %>
+        <%= link_to "다음", request.params.merge(page: pagination[:current_page] + 1), class: "px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50" %>
+      <% end %>
+    </nav>
+  </div>
+<% end %>

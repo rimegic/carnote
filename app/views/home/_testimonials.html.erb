@@ -1,0 +1,23 @@
+<section class="py-16 bg-gray-100 dark:bg-gray-850">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 class="text-4xl font-extrabold text-center mb-12 text-gray-900 dark:text-white">
+      고객들의 생생한 후기
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <% 3.times do |i| %>
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 transform transition duration-300 hover:scale-105">
+          <div class="flex items-center mb-4">
+            <img class="w-16 h-16 rounded-full object-cover mr-4" src="https://source.unsplash.com/random/100x100/?person,face,<%= i %>" alt="User Avatar">
+            <div>
+              <p class="text-xl font-semibold text-gray-900 dark:text-white">사용자 <%= i + 1 %></p>
+              <p class="text-gray-500 dark:text-gray-400">자동차 구매자</p>
+            </div>
+          </div>
+          <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+            "CarPlatform 덕분에 꿈에 그리던 차량을 합리적인 가격에 구매할 수 있었습니다. 투명한 정보와 친절한 상담에 정말 감동했습니다!"
+          </p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

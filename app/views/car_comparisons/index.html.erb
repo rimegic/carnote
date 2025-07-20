@@ -1,0 +1,108 @@
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-4xl font-bold text-gray-900 dark:text-white">차량 비교</h1>
+    <div class="space-x-4">
+      <%= link_to "비교 목록 초기화", clear_car_comparisons_path, data: { turbo_method: :delete, turbo_confirm: "정말로 비교 목록을 초기화하시겠습니까?" }, class: "bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg" %>
+      <%= link_to "차량 목록으로", cars_path, class: "bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg" %>
+    </div>
+  </div>
+
+  <% if @cars.any? %>
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">항목</th>
+              <% @cars.each do |car| %>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <%= car.make %> <%= car.model %>
+                </th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">이미지</td>
+              <% @cars.each do |car| %>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <% if car.images.attached? %>
+                    <%= image_tag car.images.first.representation(resize_to_limit: [200, 150]), class: "w-32 h-24 object-cover rounded-lg" %>
+                  <% else %>
+                    <div class="w-32 h-24 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center">
+                      <span class="text-gray-500 text-xs">이미지 없음</span>
+                    </div>
+                  <% end %>
+                </td>
+              <% end %>
+            </tr>
+            <tr class="bg-gray-50 dark:bg-gray-700">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">연식</td>
+              <% @cars.each do |car| %>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white"><%= car.year %>년</td>
+              <% end %>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">가격</td>
+              <% @cars.each do |car| %>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-indigo-600 dark:text-indigo-400">₩<%= number_to_currency(car.price, precision: 0, unit: "") %></td>
+              <% end %>
+            </tr>
+            <tr class="bg-gray-50 dark:bg-gray-700">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">주행거리</td>
+              <% @cars.each do |car| %>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white"><%= number_with_delimiter(car.mileage) %> km</td>
+              <% end %>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">색상</td>
+              <% @cars.each do |car| %>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white"><%= car.color %></td>
+              <% end %>
+            </tr>
+            <tr class="bg-gray-50 dark:bg-gray-700">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">평균 평점</td>
+              <% @cars.each do |car| %>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                  <% if car.reviews.any? %>
+                    <%= "⭐" * car.reviews.average(:rating).round %> (<%= car.reviews.average(:rating).round(1) %>)
+                  <% else %>
+                    평점 없음
+                  <% end %>
+                </td>
+              <% end %>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">판매자</td>
+              <% @cars.each do |car| %>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white"><%= car.user.email %></td>
+              <% end %>
+            </tr>
+            <tr class="bg-gray-50 dark:bg-gray-700">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">액션</td>
+              <% @cars.each do |car| %>
+                <td class="px-6 py-4 whitespace-nowrap text-sm space-y-2">
+                  <%= link_to "자세히 보기", car_path(car), class: "block bg-indigo-500 hover:bg-indigo-600 text-white text-center py-1 px-3 rounded text-xs" %>
+                  <%= link_to "비교에서 제거", remove_car_comparisons_path(car_id: car.id), data: { turbo_method: :delete }, class: "block bg-red-500 hover:bg-red-600 text-white text-center py-1 px-3 rounded text-xs" %>
+                </td>
+              <% end %>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% else %>
+    <div class="text-center py-12">
+      <div class="mx-auto h-24 w-24 text-gray-400">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+      </div>
+      <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">비교할 차량이 없습니다</h3>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">차량 목록에서 비교하고 싶은 차량을 선택해주세요.</p>
+      <div class="mt-6">
+        <%= link_to "차량 목록 보기", cars_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,58 @@
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <h1 class="text-4xl font-bold mb-8 text-gray-900 dark:text-white">내 프로필</h1>
+
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
+    <div class="mb-4">
+      <p class="text-gray-600 dark:text-gray-300"><strong>이메일:</strong> <%= @user.email %></p>
+    </div>
+    <div class="mt-6">
+      <%= link_to "프로필 수정", edit_user_path, class: "bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-300" %>
+    </div>
+  </div>
+
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 mb-8">
+    <h2 class="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">내가 등록한 차량</h2>
+    <% if @user.cars.any? %>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <% @user.cars.each do |car| %>
+          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105">
+            <% if car.images.attached? %>
+              <%= image_tag car.images.first.representation(resize_to_limit: [600, 400]), class: "w-full h-48 object-cover" %>
+            <% else %>
+              <div class="w-full h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400">
+                이미지 없음
+              </div>
+            <% end %>
+            <div class="p-6">
+              <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white"><%= car.make %> <%= car.model %></h3>
+              <p class="text-gray-600 dark:text-gray-300 mb-4"><%= car.year %>년식</p>
+              <div class="flex justify-between items-center">
+                <span class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">₩<%= number_to_currency(car.price, precision: 0, unit: "") %></span>
+                <%= link_to "자세히 보기", car_path(car), class: "bg-indigo-500 hover:bg-indigo-600 text-white text-sm font-semibold py-2 px-4 rounded-lg" %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-gray-600 dark:text-gray-300">등록한 차량이 없습니다.</p>
+    <% end %>
+  </div>
+
+  <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+    <h2 class="text-2xl font-semibold mb-6 text-gray-900 dark:text-white">내가 작성한 리뷰</h2>
+    <% if @user.reviews.any? %>
+      <div class="space-y-4">
+        <% @user.reviews.each do |review| %>
+          <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-sm">
+            <p class="font-semibold text-gray-900 dark:text-white"><%= review.car.make %> <%= review.car.model %>에 대한 리뷰 (<%= "⭐" * review.rating %>)</p>
+            <p class="text-gray-700 dark:text-gray-300 mt-1"><%= review.comment %></p>
+            <%= link_to "차량 보기", car_path(review.car), class: "text-indigo-600 hover:text-indigo-500 text-sm mt-2 inline-block" %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-gray-600 dark:text-gray-300">작성한 리뷰가 없습니다.</p>
+    <% end %>
+  </div>
+</div>
