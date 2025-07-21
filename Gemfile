@@ -22,7 +22,7 @@ gem "tailwindcss-rails"
 gem "jbuilder"
 
 gem "devise"
-gem "tabler_icons_ruby"
+gem "tabler_icons_ruby", "~> 3.26"
 gem "ransack"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
