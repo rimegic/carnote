@@ -1,10 +1,19 @@
 # lib/tasks/generate_dummy_cars.rake
-require 'faker'
+begin
+  require 'faker'
+rescue LoadError
+  # Faker is not available in production
+end
 require 'open-uri'
 
 namespace :db do
   desc "Generate 20 dummy cars with unique images"
   task generate_dummy_cars: :environment do
+    unless defined?(Faker)
+      puts "Faker gem is not available. This task is only available in development/test environments."
+      exit
+    end
+
     puts "Generating 20 dummy cars..."
 
     # Ensure there's at least one user to assign cars to
