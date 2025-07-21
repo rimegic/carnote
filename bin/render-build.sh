@@ -15,6 +15,10 @@ echo "Ensuring Bundler is installed and up-to-date..."
 gem install bundler --no-document
 bundle update --bundler
 
+echo "Ensuring Bundler is installed and up-to-date..."
+gem install bundler --no-document
+bundle update --bundler
+
 echo "Installing gems..."
 bundle install
 
