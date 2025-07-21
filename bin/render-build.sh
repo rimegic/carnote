@@ -65,19 +65,26 @@ echo "Testing database connection..."
 bundle exec rails runner "puts 'Database connection test: ' + ActiveRecord::Base.connection.execute('SELECT version()').first['version']" || echo "Connection test failed"
 
 echo "Attempting database migration..."
-echo "Running migrations with verbose output..."
-if VERBOSE=true bundle exec rake db:migrate --trace 2>&1; then
-  echo "Database migrations completed successfully!"
+echo "Trying to load schema instead of running migrations..."
+if bundle exec rake db:schema:load; then
+  echo "Schema loaded successfully!"
 else
-  echo "Migration failed with exit code $?"
-  echo "Checking database status..."
-  bundle exec rake db:version || echo "Could not get database version"
-  echo "Listing existing tables..."
-  bundle exec rails runner "puts ActiveRecord::Base.connection.tables" || echo "Could not list tables"
-  echo "Trying to create database first..."
-  bundle exec rake db:create --trace || echo "Database creation failed or already exists"
-  echo "Retrying migration with verbose output..."
-  VERBOSE=true bundle exec rake db:migrate --trace 2>&1
+  echo "Schema load failed, trying step-by-step migration..."
+  echo "Running migrations one by one..."
+  
+  # Try to run migrations step by step
+  for migration in $(ls db/migrate/*.rb | sort); do
+    migration_name=$(basename "$migration" .rb)
+    echo "Running migration: $migration_name"
+    if bundle exec rake db:migrate:up VERSION="${migration_name:0:14}"; then
+      echo "✓ $migration_name completed"
+    else
+      echo "✗ $migration_name failed"
+      echo "Checking what went wrong..."
+      bundle exec rails runner "puts ActiveRecord::Base.connection.tables.inspect" || echo "Could not list tables"
+      break
+    fi
+  done
 fi
 
 # Seed database if needed (optional, comment out if not needed)
