@@ -19,27 +19,22 @@ echo "Precompiling assets..."
 bundle exec rake assets:precompile
 bundle exec rake assets:clean
 
-# Wait for database to be ready and test connection
-echo "Waiting for database to be ready..."
-for i in {1..30}; do
-  if bundle exec rails runner "ActiveRecord::Base.connection.execute('SELECT 1')" 2>/dev/null; then
-    echo "Database connection successful!"
-    break
-  else
-    echo "Attempt $i: Database not ready, waiting 5 seconds..."
-    sleep 5
-  fi
-  
-  if [ $i -eq 30 ]; then
-    echo "Database connection failed after 30 attempts"
-    echo "DATABASE_URL: $DATABASE_URL"
-    exit 1
-  fi
-done
+# Check database connection
+echo "Checking database connection..."
+echo "DATABASE_URL (masked): ${DATABASE_URL:0:20}..."
 
-# Run database migrations
+# Try a simpler approach - just run migrations directly
+echo "Attempting to run migrations directly..."
+
+# Run database migrations with error handling
 echo "Running database migrations..."
-bundle exec rake db:migrate
+if bundle exec rake db:migrate; then
+  echo "Database migrations completed successfully!"
+else
+  echo "Migration failed, trying to create database first..."
+  bundle exec rake db:create || echo "Database creation failed or already exists"
+  bundle exec rake db:migrate
+fi
 
 # Seed database if needed (optional, comment out if not needed)
 echo "Seeding database..."

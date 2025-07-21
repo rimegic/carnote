@@ -2,11 +2,13 @@ databases:
   - name: carnote-db
     databaseName: carnote_production
     user: carnote
+    plan: free
 
 services:
   - type: web
     name: carnote
     runtime: ruby
+    plan: free
     buildCommand: "./bin/render-build.sh"
     startCommand: "bundle exec puma -C config/puma.rb"
     envVars:
@@ -20,3 +22,5 @@ services:
         value: production
       - key: BUNDLE_WITHOUT
         value: development:test
+      - key: RAILS_LOG_LEVEL
+        value: debug
