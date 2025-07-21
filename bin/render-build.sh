@@ -21,7 +21,16 @@ bundle exec rake assets:clean
 
 # Check database connection
 echo "Checking database connection..."
-echo "DATABASE_URL (masked): ${DATABASE_URL:0:20}..."
+echo "DATABASE_URL exists: $([ -n "$DATABASE_URL" ] && echo "Yes" || echo "No")"
+echo "DATABASE_URL length: ${#DATABASE_URL}"
+if [ -n "$DATABASE_URL" ]; then
+  echo "DATABASE_URL (first 50 chars): ${DATABASE_URL:0:50}..."
+else
+  echo "ERROR: DATABASE_URL is not set!"
+  echo "Available environment variables:"
+  env | grep -E "(DATABASE|POSTGRES|PG)" || echo "No database-related env vars found"
+  exit 1
+fi
 
 # Try a simpler approach - just run migrations directly
 echo "Attempting to run migrations directly..."
