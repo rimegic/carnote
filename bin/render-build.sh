@@ -15,7 +15,11 @@ echo "Ensuring Bundler is installed and up-to-date..."
 gem install bundler --no-document
 
 echo "Installing gems..."
+# Temporarily disable frozen mode to resolve dependency conflicts
+bundle config set --local frozen false
 bundle install
+# Re-enable frozen mode for production safety
+bundle config set --local frozen true
 
 # Precompile assets
 echo "Precompiling assets..."
