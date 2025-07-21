@@ -50,11 +50,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_20_045104) do
     t.integer "mileage"
     t.string "color"
     t.integer "user_id", null: false
-    t.index ["color"], name: "index_cars_on_color"
     t.index ["created_at"], name: "index_cars_on_created_at"
     t.index ["make", "model"], name: "index_cars_on_make_and_model"
     t.index ["make"], name: "index_cars_on_make"
-    t.index ["mileage"], name: "index_cars_on_mileage"
     t.index ["model"], name: "index_cars_on_model"
     t.index ["price"], name: "index_cars_on_price"
     t.index ["user_id"], name: "index_cars_on_user_id"
@@ -68,7 +66,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_20_045104) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["recipient_id"], name: "index_conversations_on_recipient_id"
-    t.index ["sender_id", "recipient_id"], name: "index_conversations_on_sender_id_and_recipient_id", unique: true
     t.index ["sender_id"], name: "index_conversations_on_sender_id"
   end
 
@@ -78,7 +75,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_20_045104) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["car_id"], name: "index_favorites_on_car_id"
-    t.index ["user_id", "car_id"], name: "index_favorites_on_user_id_and_car_id", unique: true
     t.index ["user_id"], name: "index_favorites_on_user_id"
   end
 
@@ -89,7 +85,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_20_045104) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["conversation_id"], name: "index_messages_on_conversation_id"
-    t.index ["created_at"], name: "index_messages_on_created_at"
     t.index ["user_id"], name: "index_messages_on_user_id"
   end
 
@@ -131,10 +126,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_20_045104) do
     t.text "comment"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["car_id", "rating"], name: "index_reviews_on_car_id_and_rating"
     t.index ["car_id"], name: "index_reviews_on_car_id"
-    t.index ["created_at"], name: "index_reviews_on_created_at"
-    t.index ["rating"], name: "index_reviews_on_rating"
     t.index ["user_id"], name: "index_reviews_on_user_id"
   end
 

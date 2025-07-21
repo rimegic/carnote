@@ -10,7 +10,7 @@ image: rimegic00/aa # 당신의 Docker Hub 사용자 이름과 이미지 이름
 servers:
   web:
     hosts:
-      - jack@34.47.86.179 # 당신의 GCP VM 외부 IP 주소 (사설 IP는 제거)
+      - 34.47.86.179 # 당신의 GCP VM 외부 IP 주소 (사설 IP는 제거)
   # job: # 이 섹션을 사용하지 않는다면 완전히 주석 처리된 상태를 유지하세요.
   #   hosts:
   #     - 192.168.0.1
@@ -90,8 +90,9 @@ builder:
   #   - RAILS_MASTER_KEY
 
 # Use a different ssh user than root
-# ssh:
-#   user: app
+ssh:
+  user: jack
+  keys: ["~/.ssh/id_rsa"]
 
 # Use accessory services (secrets come from .kamal/secrets).
 # accessories:
