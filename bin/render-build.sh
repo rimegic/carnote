@@ -28,12 +28,22 @@ echo "Attempting to run migrations directly..."
 
 # Run database migrations with error handling
 echo "Running database migrations..."
-if bundle exec rake db:migrate; then
+echo "Current working directory: $(pwd)"
+echo "Rails environment: $RAILS_ENV"
+
+# Test database connection first
+echo "Testing database connection..."
+bundle exec rails runner "puts 'Database connection test: ' + ActiveRecord::Base.connection.execute('SELECT version()').first['version']" || echo "Connection test failed"
+
+echo "Attempting database migration..."
+if bundle exec rake db:migrate --trace; then
   echo "Database migrations completed successfully!"
 else
-  echo "Migration failed, trying to create database first..."
-  bundle exec rake db:create || echo "Database creation failed or already exists"
-  bundle exec rake db:migrate
+  echo "Migration failed with exit code $?"
+  echo "Trying to create database first..."
+  bundle exec rake db:create --trace || echo "Database creation failed or already exists"
+  echo "Retrying migration..."
+  bundle exec rake db:migrate --trace
 fi
 
 # Seed database if needed (optional, comment out if not needed)
