@@ -40,6 +40,18 @@ echo "Running database migrations..."
 echo "Current working directory: $(pwd)"
 echo "Rails environment: $RAILS_ENV"
 
+# Install Solid Queue migrations first
+echo "Installing Solid Queue migrations..."
+bundle exec rails solid_queue:install || echo "Solid Queue install failed or already done"
+
+# Install Solid Cache migrations
+echo "Installing Solid Cache migrations..."
+bundle exec rails solid_cache:install || echo "Solid Cache install failed or already done"
+
+# Install Solid Cable migrations
+echo "Installing Solid Cable migrations..."
+bundle exec rails solid_cable:install || echo "Solid Cable install failed or already done"
+
 # Test database connection first
 echo "Testing database connection..."
 bundle exec rails runner "puts 'Database connection test: ' + ActiveRecord::Base.connection.execute('SELECT version()').first['version']" || echo "Connection test failed"
