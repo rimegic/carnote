@@ -56,9 +56,7 @@ bundle exec rails generate solid_cable:install || echo "Solid Cable generator fa
 echo "Checking migration files..."
 ls -la db/migrate/ | grep -E "(solid_queue|solid_cache|solid_cable)" || echo "No solid migrations found"
 
-# Remove schema.rb to force regeneration from migrations
-echo "Removing existing schema.rb to force regeneration..."
-rm -f db/schema.rb
+# Removed rm -f db/schema.rb as it's not standard practice and can cause issues.
 
 # Test database connection first
 echo "Testing database connection..."
@@ -67,6 +65,28 @@ bundle exec rails runner "puts 'Database connection test: ' + ActiveRecord::Base
 echo "Attempting database migration..."
 echo "Checking current migration status..."
 bundle exec rake db:version || echo "Could not get version"
+
+echo "Checking for schema_migrations table inconsistencies..."
+bundle exec rails runner "
+  # Check if users table exists but migration record is missing
+  if ActiveRecord::Base.connection.table_exists?('users')
+    missing_versions = []
+    
+    # Check for missing migration records for existing tables
+    ['20250720041435'].each do |version|
+      unless ActiveRecord::SchemaMigration.where(version: version).exists?
+        puts \"Missing migration record for version: #{version}\"
+        missing_versions << version
+      end
+    end
+    
+    # Insert missing migration records
+    missing_versions.each do |version|
+      ActiveRecord::SchemaMigration.create!(version: version)
+      puts \"Inserted missing migration record: #{version}\"
+    end
+  end
+" || echo "Schema migration check failed"
 
 echo "Running standard migration with environment protection disabled..."
 DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bundle exec rake db:migrate || echo "Migration completed with some expected errors"
