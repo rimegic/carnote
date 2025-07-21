@@ -56,6 +56,10 @@ bundle exec rails generate solid_cable:install || echo "Solid Cable generator fa
 echo "Checking migration files..."
 ls -la db/migrate/ | grep -E "(solid_queue|solid_cache|solid_cable)" || echo "No solid migrations found"
 
+# Remove schema.rb to force regeneration from migrations
+echo "Removing existing schema.rb to force regeneration..."
+rm -f db/schema.rb
+
 # Test database connection first
 echo "Testing database connection..."
 bundle exec rails runner "puts 'Database connection test: ' + ActiveRecord::Base.connection.execute('SELECT version()').first['version']" || echo "Connection test failed"
