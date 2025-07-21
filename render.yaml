@@ -1,7 +1,7 @@
 databases:
-  - name: carnote-db
-    databaseName: carnote_production
-    user: carnote
+  - name: carnote_db
+    databaseName: carnote_db
+    user: carnote_db_user
     plan: free
 
 services:
@@ -14,7 +14,7 @@ services:
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: carnote-db
+          name: carnote_db
           property: connectionString
       - key: RAILS_MASTER_KEY
         sync: false
