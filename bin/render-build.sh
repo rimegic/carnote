@@ -4,6 +4,12 @@ set -o errexit
 
 echo "Starting build process..."
 
+# Check environment variables
+echo "Checking environment variables..."
+echo "RAILS_ENV: $RAILS_ENV"
+echo "DATABASE_URL exists: $([ -n "$DATABASE_URL" ] && echo "Yes" || echo "No")"
+echo "RAILS_MASTER_KEY exists: $([ -n "$RAILS_MASTER_KEY" ] && echo "Yes" || echo "No")"
+
 # Install dependencies
 echo "Installing gems..."
 bundle install
