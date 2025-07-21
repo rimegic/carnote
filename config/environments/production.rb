@@ -49,10 +49,8 @@ Rails.application.configure do
   # Use memory store instead of solid_cache_store for single database setup
   config.cache_store = :memory_store
 
-  # Replace the default in-process and non-durable queuing backend for Active Job.
-  config.active_job.queue_adapter = :solid_queue
-  # Use single database for all solid adapters in production
-  # config.solid_queue.connects_to = { database: { writing: :queue } }
+  # Use async queue adapter instead of solid_queue for single database setup
+  config.active_job.queue_adapter = :async
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

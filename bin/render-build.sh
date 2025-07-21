@@ -11,6 +11,10 @@ echo "DATABASE_URL exists: $([ -n "$DATABASE_URL" ] && echo "Yes" || echo "No")"
 echo "RAILS_MASTER_KEY exists: $([ -n "$RAILS_MASTER_KEY" ] && echo "Yes" || echo "No")"
 
 # Install dependencies
+echo "Ensuring Bundler is installed and up-to-date..."
+gem install bundler --no-document
+bundle update --bundler
+
 echo "Installing gems..."
 bundle install
 
@@ -40,21 +44,8 @@ echo "Running database migrations..."
 echo "Current working directory: $(pwd)"
 echo "Rails environment: $RAILS_ENV"
 
-# Generate Solid Queue migrations
-echo "Generating Solid Queue migrations..."
-bundle exec rails generate solid_queue:install || echo "Solid Queue generator failed or already done"
-
-# Generate Solid Cache migrations  
-echo "Generating Solid Cache migrations..."
-bundle exec rails generate solid_cache:install || echo "Solid Cache generator failed or already done"
-
-# Generate Solid Cable migrations
-echo "Generating Solid Cable migrations..."
-bundle exec rails generate solid_cable:install || echo "Solid Cable generator failed or already done"
-
-# List migration files to verify they exist
-echo "Checking migration files..."
-ls -la db/migrate/ | grep -E "(solid_queue|solid_cache|solid_cable)" || echo "No solid migrations found"
+# Skip Solid gem installations - using async adapter instead
+echo "Skipping Solid gem installations (using async adapter)..."
 
 # Removed rm -f db/schema.rb as it's not standard practice and can cause issues.
 
