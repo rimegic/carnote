@@ -40,17 +40,21 @@ echo "Running database migrations..."
 echo "Current working directory: $(pwd)"
 echo "Rails environment: $RAILS_ENV"
 
-# Install Solid Queue migrations first
-echo "Installing Solid Queue migrations..."
-bundle exec rails solid_queue:install || echo "Solid Queue install failed or already done"
+# Generate Solid Queue migrations
+echo "Generating Solid Queue migrations..."
+bundle exec rails generate solid_queue:install || echo "Solid Queue generator failed or already done"
 
-# Install Solid Cache migrations
-echo "Installing Solid Cache migrations..."
-bundle exec rails solid_cache:install || echo "Solid Cache install failed or already done"
+# Generate Solid Cache migrations  
+echo "Generating Solid Cache migrations..."
+bundle exec rails generate solid_cache:install || echo "Solid Cache generator failed or already done"
 
-# Install Solid Cable migrations
-echo "Installing Solid Cable migrations..."
-bundle exec rails solid_cable:install || echo "Solid Cable install failed or already done"
+# Generate Solid Cable migrations
+echo "Generating Solid Cable migrations..."
+bundle exec rails generate solid_cable:install || echo "Solid Cable generator failed or already done"
+
+# List migration files to verify they exist
+echo "Checking migration files..."
+ls -la db/migrate/ | grep -E "(solid_queue|solid_cache|solid_cable)" || echo "No solid migrations found"
 
 # Test database connection first
 echo "Testing database connection..."
