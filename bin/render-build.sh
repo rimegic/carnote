@@ -65,14 +65,19 @@ echo "Testing database connection..."
 bundle exec rails runner "puts 'Database connection test: ' + ActiveRecord::Base.connection.execute('SELECT version()').first['version']" || echo "Connection test failed"
 
 echo "Attempting database migration..."
-if bundle exec rake db:migrate --trace; then
+echo "Running migrations with verbose output..."
+if VERBOSE=true bundle exec rake db:migrate --trace 2>&1; then
   echo "Database migrations completed successfully!"
 else
   echo "Migration failed with exit code $?"
+  echo "Checking database status..."
+  bundle exec rake db:version || echo "Could not get database version"
+  echo "Listing existing tables..."
+  bundle exec rails runner "puts ActiveRecord::Base.connection.tables" || echo "Could not list tables"
   echo "Trying to create database first..."
   bundle exec rake db:create --trace || echo "Database creation failed or already exists"
-  echo "Retrying migration..."
-  bundle exec rake db:migrate --trace
+  echo "Retrying migration with verbose output..."
+  VERBOSE=true bundle exec rake db:migrate --trace 2>&1
 fi
 
 # Seed database if needed (optional, comment out if not needed)
