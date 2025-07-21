@@ -13,11 +13,6 @@ echo "RAILS_MASTER_KEY exists: $([ -n "$RAILS_MASTER_KEY" ] && echo "Yes" || ech
 # Install dependencies
 echo "Ensuring Bundler is installed and up-to-date..."
 gem install bundler --no-document
-bundle update --bundler
-
-echo "Ensuring Bundler is installed and up-to-date..."
-gem install bundler --no-document
-bundle update --bundler
 
 echo "Installing gems..."
 bundle install
