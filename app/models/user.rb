@@ -7,8 +7,8 @@ class User < ApplicationRecord
   has_many :favorites, dependent: :destroy
   has_many :favorite_cars, through: :favorites, source: :car
   has_many :reviews, dependent: :destroy
-  has_many :sent_conversations, class_name: 'Conversation', foreign_key: 'sender_id'
-  has_many :received_conversations, class_name: 'Conversation', foreign_key: 'recipient_id'
+  has_many :sent_conversations, class_name: "Conversation", foreign_key: "sender_id"
+  has_many :received_conversations, class_name: "Conversation", foreign_key: "recipient_id"
   has_many :messages, dependent: :destroy
   has_many :cars, dependent: :destroy
   has_many :notifications, dependent: :destroy

@@ -1,1 +1,140 @@
 @import "tailwindcss";
+
+/* 반응형 디자인을 위한 커스텀 유틸리티 */
+@layer utilities {
+  /* 터치 친화적 최소 크기 */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  /* 안전한 터치 조작 */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+  
+  /* 텍스트 줄임표 */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+  
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+  
+  /* 스크롤바 스타일링 */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* 반응형 컨테이너 */
+  .container-responsive {
+    @apply w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12;
+  }
+  
+  /* 반응형 그리드 */
+  .grid-responsive-cards {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-8;
+  }
+  
+  /* 반응형 텍스트 크기 */
+  .text-responsive-xs {
+    @apply text-xs sm:text-sm;
+  }
+  
+  .text-responsive-sm {
+    @apply text-sm sm:text-base;
+  }
+  
+  .text-responsive-base {
+    @apply text-base sm:text-lg lg:text-xl;
+  }
+  
+  .text-responsive-lg {
+    @apply text-lg sm:text-xl lg:text-2xl;
+  }
+  
+  .text-responsive-xl {
+    @apply text-xl sm:text-2xl lg:text-3xl;
+  }
+  
+  .text-responsive-2xl {
+    @apply text-2xl sm:text-3xl lg:text-4xl xl:text-5xl;
+  }
+  
+  .text-responsive-3xl {
+    @apply text-3xl sm:text-4xl lg:text-5xl xl:text-6xl;
+  }
+  
+  /* 반응형 패딩 */
+  .p-responsive {
+    @apply p-4 sm:p-6 lg:p-8;
+  }
+  
+  .py-responsive {
+    @apply py-6 sm:py-8 lg:py-12;
+  }
+  
+  .px-responsive {
+    @apply px-4 sm:px-6 lg:px-8 xl:px-12;
+  }
+  
+  /* 반응형 마진 */
+  .mb-responsive {
+    @apply mb-6 sm:mb-8 lg:mb-12;
+  }
+  
+  .mt-responsive {
+    @apply mt-6 sm:mt-8 lg:mt-12;
+  }
+  
+  /* 반응형 그림자 */
+  .shadow-responsive {
+    @apply shadow-lg sm:shadow-xl lg:shadow-2xl;
+  }
+  
+  /* 반응형 둥근 모서리 */
+  .rounded-responsive {
+    @apply rounded-lg sm:rounded-xl lg:rounded-2xl;
+  }
+  
+  /* 호버 효과 */
+  .hover-lift {
+    @apply transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg;
+  }
+  
+  .hover-scale {
+    @apply transition-transform duration-200 transform hover:scale-105 active:scale-95;
+  }
+  
+  /* 그라디언트 버튼 */
+  .btn-gradient-primary {
+    @apply bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg active:scale-95;
+  }
+  
+  /* 반응형 높이 */
+  .h-responsive-hero {
+    @apply min-h-[60vh] sm:min-h-[70vh] lg:min-h-[80vh];
+  }
+  
+  .h-responsive-card {
+    @apply h-44 sm:h-48 lg:h-52;
+  }
+}

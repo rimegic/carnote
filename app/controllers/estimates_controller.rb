@@ -1,4 +1,5 @@
 class EstimatesController < ApplicationController
+  skip_before_action :authenticate_user!, only: [:start, :calculate, :quote_popup]
   def start
     @brand = params[:brand]
     @model = params[:model]
@@ -11,10 +12,10 @@ class EstimatesController < ApplicationController
     @price = params[:price].to_i
     @down_payment = params[:down_payment].to_i
     @loan_period = params[:loan_period].to_i
-    
+
     @loan_amount = @price - @down_payment
     @estimates = calculate_loan_estimates(@loan_amount, @loan_period)
-    
+
     render json: {
       estimates: @estimates,
       car_info: {
@@ -33,7 +34,7 @@ class EstimatesController < ApplicationController
     @price = params[:price]
     @estimate_type = params[:estimate_type]
     @monthly_payment = params[:monthly_payment]
-    
+
     render layout: false
   end
 
@@ -140,7 +141,7 @@ class EstimatesController < ApplicationController
         "LC" => { price: 129000000, image: "/generated_images/car_3.jpg" }
       }
     }
-    
+
     car_data.dig(brand, model)
   end
 
@@ -152,7 +153,7 @@ class EstimatesController < ApplicationController
         interest_rate: 2.9,
         monthly_payment: calculate_monthly_payment(loan_amount, 2.9, loan_period),
         total_payment: calculate_total_payment(loan_amount, 2.9, loan_period),
-        benefits: ["최저금리 보장", "수수료 면제"]
+        benefits: [ "최저금리 보장", "수수료 면제" ]
       },
       {
         bank: "국민은행",
@@ -160,7 +161,7 @@ class EstimatesController < ApplicationController
         interest_rate: 3.2,
         monthly_payment: calculate_monthly_payment(loan_amount, 3.2, loan_period),
         total_payment: calculate_total_payment(loan_amount, 3.2, loan_period),
-        benefits: ["KB국민카드 할인", "주거래 우대"]
+        benefits: [ "KB국민카드 할인", "주거래 우대" ]
       },
       {
         bank: "신한은행",
@@ -168,7 +169,7 @@ class EstimatesController < ApplicationController
         interest_rate: 3.5,
         monthly_payment: calculate_monthly_payment(loan_amount, 3.5, loan_period),
         total_payment: calculate_total_payment(loan_amount, 3.5, loan_period),
-        benefits: ["신한카드 포인트", "보험료 할인"]
+        benefits: [ "신한카드 포인트", "보험료 할인" ]
       },
       {
         bank: "하나은행",
@@ -176,7 +177,7 @@ class EstimatesController < ApplicationController
         interest_rate: 3.8,
         monthly_payment: calculate_monthly_payment(loan_amount, 3.8, loan_period),
         total_payment: calculate_total_payment(loan_amount, 3.8, loan_period),
-        benefits: ["하나머니 적립", "금리 우대"]
+        benefits: [ "하나머니 적립", "금리 우대" ]
       }
     ]
   end

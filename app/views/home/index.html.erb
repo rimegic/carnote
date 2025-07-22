@@ -1,30 +1,30 @@
-<h1>안녕하세요, Kamal 배포!</h1>
-<p>이 페이지가 보이면 최종 성공입니다.</p>
 <!-- Hero Section -->
-<section class="relative bg-gradient-to-br from-blue-50 to-indigo-100 py-20 overflow-hidden">
+<section class="relative bg-gradient-to-br from-blue-50 to-indigo-100 py-12 sm:py-16 lg:py-20 xl:py-24 overflow-hidden min-h-[80vh] flex items-center">
   <!-- Background Car Image -->
   <div class="absolute inset-0 z-0">
     <img src="/generated_images/hero_car_bg.jpg" alt="Hero Car" class="w-full h-full object-cover opacity-10">
   </div>
   
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative z-10 w-full">
     <div class="text-center">
-      <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-        신차 구매의 새로운 기준,<br>
-        <span class="text-blue-600">카노트</span>에서 시작하세요
+      <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-900 mb-4 sm:mb-6 lg:mb-8 leading-tight">
+        <span class="block">신차 구매의 새로운 기준</span>
+        <span class="text-blue-600 block mt-2">카노트에서 시작하세요</span>
       </h1>
-      <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-        전국 700개 전시장, 8천명의 딜러 네트워크를 통한 실시간 할인 정보<br>
-        투명한 비교 견적과 최적의 금융 상품으로 스마트한 신차 구매를 경험하세요.
+      <p class="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 mb-6 sm:mb-8 lg:mb-12 max-w-4xl mx-auto px-4 sm:px-0 leading-relaxed">
+        <span class="block">전국 700개 전시장, 8천명의 딜러 네트워크를 통한</span>
+        <span class="block mt-2">실시간 할인 정보, 금융 상품으로 신차 구매를 경험하세요</span>
       </p>
       
       <!-- Quote Request Form -->
-      <div class="max-w-4xl mx-auto mb-12">
-        <div class="bg-white rounded-lg shadow-lg p-6">
-          <h3 class="text-xl font-semibold text-gray-900 mb-4">무료 신차 견적 받기</h3>
+      <div class="max-w-5xl mx-auto mb-8 sm:mb-12 lg:mb-16 px-4 sm:px-0">
+        <div class="bg-white rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl p-4 sm:p-6 lg:p-8 border border-gray-100">
+          <h3 class="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 mb-4 sm:mb-6 text-center">무료 신차 견적 받기</h3>
           <%= form_with url: cars_path, method: :get, local: true, id: "quote-form", html: { autocomplete: "off" } do |f| %>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <div>
+            <!-- 주요 선택 옵션 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700 sm:hidden">브랜드</label>
                 <%= f.select "brand", options_for_select([
                   ["브랜드 선택", ""],
                   ["현대", "현대"],
@@ -36,29 +36,30 @@
                   ["볼보", "볼보"],
                   ["렉서스", "렉서스"]
                 ]), {}, { 
-                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                  class: "w-full px-3 sm:px-4 py-3 sm:py-4 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white hover:border-blue-300",
                   id: "brand-select",
-                  onchange: "updateModels()",
                   autocomplete: "off"
                 } %>
               </div>
-              <div>
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700 sm:hidden">모델</label>
                 <%= f.select "model", options_for_select([["모델 선택", ""]]), {}, { 
-                  class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                  class: "w-full px-3 sm:px-4 py-3 sm:py-4 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white hover:border-blue-300 disabled:bg-gray-50 disabled:text-gray-400",
                   id: "model-select",
-                  onchange: "updatePrice()",
                   disabled: true,
                   autocomplete: "off"
                 } %>
               </div>
-              <div>
-                <input type="text" id="price-display" placeholder="예상 가격" class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50" readonly>
+              <div class="space-y-2 sm:col-span-2 lg:col-span-1">
+                <label class="block text-sm font-medium text-gray-700 sm:hidden">예상 가격</label>
+                <input type="text" id="price-display" placeholder="예상 가격" class="w-full px-3 sm:px-4 py-3 sm:py-4 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-xl bg-gray-50 text-gray-600 font-medium" readonly>
               </div>
             </div>
             
-            <!-- Additional Options -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div>
+            <!-- 추가 옵션 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700 sm:hidden">연료 타입</label>
                 <%= f.select "fuel_type", options_for_select([
                   ["연료 타입", ""],
                   ["가솔린", "가솔린"],
@@ -66,9 +67,10 @@
                   ["하이브리드", "하이브리드"],
                   ["전기", "전기"],
                   ["수소", "수소"]
-                ]), {}, { class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" } %>
+                ]), {}, { class: "w-full px-3 sm:px-4 py-3 sm:py-4 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white hover:border-blue-300" } %>
               </div>
-              <div>
+              <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700 sm:hidden">예산 범위</label>
                 <%= f.select "budget", options_for_select([
                   ["예산 범위", ""],
                   ["2천만원 이하", "20000000"],
@@ -76,17 +78,29 @@
                   ["3천-4천만원", "40000000"],
                   ["4천-5천만원", "50000000"],
                   ["5천만원 이상", "50000001"]
-                ]), {}, { class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" } %>
+                ]), {}, { class: "w-full px-3 sm:px-4 py-3 sm:py-4 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white hover:border-blue-300" } %>
               </div>
             </div>
             
             <div class="text-center">
-              <button type="button" id="estimate-button" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg text-lg font-semibold transition-colors cursor-pointer">
-                무료 견적 받기
+              <button type="button" id="estimate-button" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 lg:px-12 py-3 sm:py-4 rounded-lg sm:rounded-xl text-base sm:text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg active:scale-95 min-h-[48px] touch-manipulation border-0 outline-none" style="background-color: #2563eb !important; color: white !important;">
+                <span class="flex items-center justify-center gap-2 text-white">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                  <span class="text-white font-semibold">무료 견적 받기</span>
+                </span>
               </button>
             </div>
           <% end %>
-          <p class="text-sm text-gray-500 mt-3">* 견적 요청 후 24시간 내 복수의 딜러가 경쟁 견적을 제시합니다</p>
+          <p class="text-xs sm:text-sm text-gray-500 mt-3 sm:mt-4 text-center leading-relaxed">
+            <span class="inline-flex items-center gap-1">
+              <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+              견적 요청 후 24시간 내 복수의 딜러가 경쟁 견적을 제시합니다
+            </span>
+          </p>
         </div>
       </div>
 
@@ -94,9 +108,15 @@
         let isInitialized = false;
         
         document.addEventListener('DOMContentLoaded', function() {
+          console.log('🚀 홈페이지 DOMContentLoaded 시작');
           if (!isInitialized) {
             initializePage();
             isInitialized = true;
+            
+            // initializePage 완료 후 이벤트 리스너 등록
+            setTimeout(function() {
+              setupEventListeners();
+            }, 100);
           }
         });
 
@@ -108,8 +128,9 @@
               initializePage();
               isInitialized = true;
             } else {
-              // 이미 초기화된 경우 폼만 리셋
+              // 이미 초기화된 경우 폼만 리셋하고 이벤트 리스너 재등록
               safeResetForm();
+              setupEventListeners(); // 이벤트 리스너 재등록
             }
           }, 100);
         });
@@ -175,15 +196,8 @@
               budgetSelect.selectedIndex = 0;
             }
             
-            // 이벤트 리스너 재등록
-            setTimeout(function() {
-              if (brandSelect) {
-                brandSelect.onchange = updateModels;
-              }
-              if (modelSelect) {
-                modelSelect.onchange = updatePrice;
-              }
-            }, 50);
+            // 이벤트 리스너는 DOMContentLoaded에서 등록하므로 여기서는 제거
+            console.log('🔄 safeResetForm 완료 - 이벤트는 DOMContentLoaded에서 처리');
             
           } catch (error) {
             console.log('Form reset error:', error);
@@ -301,7 +315,7 @@
             
             const selectedBrand = brandSelect.value;
             
-            // 안전한 모델 선택 초기화
+            // 완전한 모델 선택 초기화 (홈페이지용)
             modelSelect.innerHTML = '<option value="">모델 선택</option>';
             modelSelect.value = '';
             modelSelect.selectedIndex = 0;
@@ -310,19 +324,91 @@
             if (selectedBrand && carData[selectedBrand]) {
               modelSelect.disabled = false;
               
-              // 해당 브랜드의 모델들 추가
+              // 해당 브랜드의 모델들 추가 (자동 선택 없음)
               Object.keys(carData[selectedBrand]).forEach(model => {
                 const option = document.createElement('option');
                 option.value = model;
                 option.textContent = model;
+                // 홈페이지에서는 절대 자동 선택하지 않음
                 modelSelect.appendChild(option);
               });
             } else {
               modelSelect.disabled = true;
             }
             
+            console.log('🔄 홈페이지 updateModels 완료, 브랜드:', selectedBrand);
+            
           } catch (error) {
             console.log('Update models error:', error);
+          }
+        }
+
+        // 이벤트 리스너 설정 함수 추가
+        function setupEventListeners() {
+          const brandSelect = document.getElementById('brand-select');
+          const modelSelect = document.getElementById('model-select');
+          
+          if (brandSelect) {
+            // 기존 이벤트 리스너 제거 후 새로 등록
+            brandSelect.removeEventListener('change', handleBrandChange);
+            brandSelect.addEventListener('change', handleBrandChange);
+            console.log('✅ 브랜드 이벤트 리스너 등록됨');
+          }
+          
+          if (modelSelect) {
+            // 기존 이벤트 리스너 제거 후 새로 등록
+            modelSelect.removeEventListener('change', handleModelChange);
+            modelSelect.addEventListener('change', handleModelChange);
+            console.log('✅ 모델 이벤트 리스너 등록됨');
+          }
+        }
+        
+        // 이벤트 핸들러 함수들
+        function handleBrandChange() {
+          console.log('🔄 브랜드 변경:', this.value);
+          updateModels();
+        }
+        
+        function handleModelChange() {
+          console.log('🔄 모델 변경:', this.value);
+          updatePrice();
+        }
+
+        // 누락된 updateModels 함수 추가!
+        function updateModels() {
+          console.log('🔄 updateModels 함수 실행됨');
+          const brandSelect = document.getElementById('brand-select');
+          const modelSelect = document.getElementById('model-select');
+          const priceDisplay = document.getElementById('price-display');
+          
+          if (!brandSelect || !modelSelect || !priceDisplay) {
+            console.log('❌ 필수 요소를 찾을 수 없음');
+            return;
+          }
+          
+          const selectedBrand = brandSelect.value;
+          console.log('🔍 선택된 브랜드:', selectedBrand);
+          
+          // 모델 선택 완전 초기화
+          modelSelect.innerHTML = '<option value="">모델 선택</option>';
+          modelSelect.value = '';
+          modelSelect.selectedIndex = 0;
+          priceDisplay.value = '';
+          
+          if (selectedBrand && carData[selectedBrand]) {
+            modelSelect.disabled = false; // 중요: 활성화!
+            console.log('✅ 모델 선택 활성화됨');
+            
+            Object.keys(carData[selectedBrand]).forEach(model => {
+              const option = document.createElement('option');
+              option.value = model;
+              option.textContent = model;
+              modelSelect.appendChild(option);
+            });
+            console.log('✅ 모델 목록 업데이트됨, 모델 수:', Object.keys(carData[selectedBrand]).length);
+          } else {
+            modelSelect.disabled = true;
+            console.log('❌ 모델 선택 비활성화됨');
           }
         }
 
@@ -334,11 +420,15 @@
           const selectedBrand = brandSelect.value;
           const selectedModel = modelSelect.value;
           
+          console.log('🔍 가격 업데이트 - 브랜드:', selectedBrand, '모델:', selectedModel);
+          
           // 빈 값이거나 "모델 선택"인 경우 가격 표시 안함
           if (selectedBrand && selectedModel && selectedModel !== '' && carData[selectedBrand] && carData[selectedBrand][selectedModel]) {
             priceDisplay.value = carData[selectedBrand][selectedModel].range;
+            console.log('✅ 가격 업데이트됨:', carData[selectedBrand][selectedModel].range);
           } else {
             priceDisplay.value = '';
+            console.log('❌ 가격 초기화됨');
           }
         }
 

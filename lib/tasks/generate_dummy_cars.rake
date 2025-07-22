@@ -1,10 +1,10 @@
 # lib/tasks/generate_dummy_cars.rake
 begin
-  require 'faker'
+  require "faker"
 rescue LoadError
   # Faker is not available in production
 end
-require 'open-uri'
+require "open-uri"
 
 namespace :db do
   desc "Generate 20 dummy cars with unique images"
@@ -34,7 +34,7 @@ namespace :db do
 
         # Generate a unique image using picsum.photos with a seed
         image_url = "https://picsum.photos/seed/#{Time.now.to_i + i}/600/400"
-        
+
         # Attach the image using open-uri
         downloaded_image = URI.open(image_url)
         car.images.attach(io: downloaded_image, filename: "car_#{i}.jpg", content_type: "image/jpeg")

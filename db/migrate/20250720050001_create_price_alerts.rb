@@ -9,7 +9,7 @@ class CreatePriceAlerts < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :price_alerts, [:user_id, :car_id], unique: true
+    add_index :price_alerts, [ :user_id, :car_id ], unique: true
     add_index :price_alerts, :active
   end
 end

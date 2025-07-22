@@ -37,7 +37,7 @@
               <td class="py-3 px-6 text-left"><%= user.admin ? "예" : "아니오" %></td>
               <td class="py-3 px-6 text-center">
                 <%= link_to "편집", edit_admin_user_path(user), class: "bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded-lg text-xs mr-2" %>
-                <%= link_to "삭제", delete_admin_user_path(user), data: { turbo_method: :delete, turbo_confirm: "정말로 이 사용자를 삭제하시겠습니까?" }, class: "bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded-lg text-xs" %>
+                <%= link_to "삭제", admin_user_path(user), data: { turbo_method: :delete, turbo_confirm: "정말로 이 사용자를 삭제하시겠습니까?" }, class: "bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded-lg text-xs" %>
               </td>
             </tr>
           <% end %>
@@ -72,7 +72,7 @@
               <td class="py-3 px-6 text-left">₩<%= number_to_currency(car.price, precision: 0, unit: "") %></td>
               <td class="py-3 px-6 text-center">
                 <%= link_to "편집", edit_admin_car_path(car), class: "bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-3 rounded-lg text-xs mr-2" %>
-                <%= link_to "삭제", delete_admin_car_path(car), data: { turbo_method: :delete, turbo_confirm: "정말로 이 차량을 삭제하시겠습니까?" }, class: "bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded-lg text-xs" %>
+                <%= link_to "삭제", admin_car_path(car), data: { turbo_method: :delete, turbo_confirm: "정말로 이 차량을 삭제하시겠습니까?" }, class: "bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded-lg text-xs" %>
               </td>
             </tr>
           <% end %>

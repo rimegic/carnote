@@ -15,11 +15,11 @@ class Notification < ApplicationRecord
 
   def target_url
     case notifiable_type
-    when 'Car'
+    when "Car"
       Rails.application.routes.url_helpers.car_path(notifiable)
-    when 'Message'
+    when "Message"
       Rails.application.routes.url_helpers.conversation_path(notifiable.conversation)
-    when 'Review'
+    when "Review"
       Rails.application.routes.url_helpers.car_path(notifiable.car)
     else
       Rails.application.routes.url_helpers.root_path

@@ -12,14 +12,14 @@ class ReviewsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create review" do
     sign_in users(:two) # different user
-    assert_difference('Review.count') do
+    assert_difference("Review.count") do
       post car_reviews_url(@car), params: { review: { rating: 4, comment: "Good car" } }
     end
     assert_redirected_to @car
   end
 
   test "should destroy own review" do
-    assert_difference('Review.count', -1) do
+    assert_difference("Review.count", -1) do
       delete car_review_url(@car, @review)
     end
     assert_redirected_to @car

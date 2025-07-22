@@ -10,7 +10,7 @@ class MessagesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create message" do
-    assert_difference('Message.count') do
+    assert_difference("Message.count") do
       post conversation_messages_url(@conversation), params: { message: { body: "Test message" } }
     end
     assert_redirected_to conversation_path(@conversation)

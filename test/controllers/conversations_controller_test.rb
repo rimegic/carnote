@@ -16,7 +16,7 @@ class ConversationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create conversation" do
-    assert_difference('Conversation.count') do
+    assert_difference("Conversation.count") do
       post conversations_url, params: { sender_id: @user.id, recipient_id: @other_user.id }
     end
     assert_redirected_to conversation_path(Conversation.last)

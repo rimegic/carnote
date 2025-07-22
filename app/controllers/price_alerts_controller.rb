@@ -1,7 +1,7 @@
 class PriceAlertsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_car, only: [:create]
-  before_action :set_price_alert, only: [:destroy]
+  before_action :set_car, only: [ :create ]
+  before_action :set_price_alert, only: [ :destroy ]
 
   def index
     @price_alerts = current_user.price_alerts.includes(:car).order(created_at: :desc)
@@ -16,7 +16,7 @@ class PriceAlertsController < ApplicationController
     else
       flash[:alert] = "가격 알림 설정에 실패했습니다: #{@price_alert.errors.full_messages.to_sentence}"
     end
-    
+
     redirect_to @car
   end
 

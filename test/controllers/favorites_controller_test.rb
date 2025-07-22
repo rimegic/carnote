@@ -15,7 +15,11 @@ class FavoritesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create favorite" do
-    assert_difference('Favorite.count') do
+    # 기존 favorite이 있다면 삭제
+    existing_favorite = @user.favorites.find_by(car: @car)
+    existing_favorite&.destroy
+
+    assert_difference("Favorite.count") do
       post favorites_url, params: { car_id: @car.id }
     end
     assert_redirected_to @car
@@ -23,7 +27,7 @@ class FavoritesControllerTest < ActionDispatch::IntegrationTest
 
   test "should destroy favorite" do
     @user.favorites.create(car: @car)
-    assert_difference('Favorite.count', -1) do
+    assert_difference("Favorite.count", -1) do
       delete favorite_url(@car)
     end
     assert_redirected_to @car

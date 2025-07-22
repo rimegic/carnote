@@ -1,12 +1,13 @@
 class CarsController < ApplicationController
   include PaginationConcern
   
-  before_action :set_car, only: [:show]
+  skip_before_action :authenticate_user!, only: [:index, :show]
+  before_action :set_car, only: [ :show ]
 
   def index
     @q = Car.includes(:user, :reviews, images_attachments: :blob).ransack(params[:q])
     cars_query = @q.result(distinct: true).order(created_at: :desc)
-    
+
     pagination_data = paginate_collection(cars_query, per_page: 12)
     @cars = pagination_data[:collection]
     @pagination = pagination_data.except(:collection)

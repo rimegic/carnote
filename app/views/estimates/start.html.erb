@@ -82,6 +82,12 @@
                 <option value="72">72개월</option>
                 <option value="84">84개월</option>
               </select>
+              <div id="loan-period-error" class="hidden mt-2 text-sm text-red-600 flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                </svg>
+                할부 기간을 선택해주세요
+              </div>
             </div>
             
             <div>
@@ -90,7 +96,7 @@
             </div>
           </div>
           
-          <button id="calculate-btn" class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors" disabled>
+          <button id="calculate-btn" class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors">
             할부 견적 계산하기
           </button>
         </div>
@@ -98,7 +104,46 @@
 
       <!-- Right: Loan Estimates -->
       <div class="lg:col-span-1">
-        <div class="bg-white rounded-xl shadow-sm p-6 sticky top-6">
+        <!-- Chat Modal (moved here) -->
+        <div id="chat-modal" class="bg-white rounded-xl shadow-sm border border-gray-200 hidden mb-6">
+          <!-- Chat Header -->
+          <div class="bg-blue-600 text-white p-4 rounded-t-xl flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                <span class="text-blue-600 font-bold text-sm">🚗</span>
+              </div>
+              <div>
+                <h3 class="font-semibold">카노트 상담사</h3>
+                <p class="text-xs text-blue-100">온라인</p>
+              </div>
+            </div>
+            <button id="close-chat" class="text-white hover:text-blue-200 transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Chat Messages -->
+          <div id="chat-messages" class="h-60 overflow-y-auto p-4 space-y-3 bg-gray-50">
+            <!-- Messages will be added here -->
+          </div>
+
+          <!-- Chat Input -->
+          <div class="p-4 border-t border-gray-200 bg-white rounded-b-xl">
+            <div class="flex space-x-2">
+              <input type="text" id="chat-input" placeholder="메시지를 입력하세요..." 
+                     class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+              <button id="send-message" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-6 sticky top-6 mb-6">
           <h2 class="text-xl font-semibold text-gray-900 mb-4">할부 견적 비교</h2>
           
           <div id="estimates-container" class="space-y-4">
@@ -107,6 +152,93 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
               <p>차량과 조건을 선택하면<br>할부 견적이 표시됩니다</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Location Section -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-semibold text-gray-900">📍 현재 위치</h2>
+            <button id="get-location-btn" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition duration-200 flex items-center space-x-2">
+              <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+              </svg>
+              <span>위치 찾기</span>
+            </button>
+          </div>
+          
+          <div id="location-status" class="mb-4">
+            <div class="flex items-center text-gray-500">
+              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              위치 정보를 가져오는 중...
+            </div>
+          </div>
+
+          <div id="location-info" class="hidden">
+            <div class="space-y-3">
+              <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0">
+                  <svg class="h-5 w-5 text-green-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm font-medium text-gray-900">현재 주소</p>
+                  <p id="current-address" class="text-sm text-gray-600">주소를 가져오는 중...</p>
+                </div>
+              </div>
+              
+              <div class="flex items-start space-x-3">
+                <div class="flex-shrink-0">
+                  <svg class="h-5 w-5 text-blue-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm font-medium text-gray-900">좌표</p>
+                  <p id="coordinates" class="text-sm text-gray-600">위도: -, 경도: -</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Nearby Dealers Section -->
+            <div class="mt-6 pt-6 border-t border-gray-200">
+              <h3 class="text-lg font-medium text-gray-900 mb-3">🏪 근처 딜러샵</h3>
+              <div id="nearby-dealers" class="space-y-3">
+                <!-- 딜러샵 정보가 여기에 표시됩니다 -->
+              </div>
+            </div>
+          </div>
+
+          <div id="location-error" class="hidden">
+            <div class="flex items-center space-x-3 text-red-600">
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+              <div>
+                <p class="font-medium">위치 정보를 가져올 수 없습니다</p>
+                <p class="text-sm text-red-500">브라우저에서 위치 권한을 허용해주세요</p>
+              </div>
+            </div>
+            
+            <button id="retry-location" class="mt-3 w-full bg-red-50 hover:bg-red-100 text-red-700 font-medium py-2 px-4 rounded-lg transition duration-200">
+              다시 시도
+            </button>
+          </div>
+
+          <!-- Manual Location Input -->
+          <div class="mt-6 pt-6 border-t border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900 mb-3">📝 수동 위치 입력</h3>
+            <div class="space-y-3">
+              <input type="text" id="manual-address" placeholder="주소를 입력하세요 (예: 서울시 강남구 역삼동)" 
+                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <button id="search-address" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition duration-200">
+                주소로 검색
+              </button>
             </div>
           </div>
         </div>
@@ -125,6 +257,7 @@
     </div>
   </div>
 </div>
+
 
 <script>
   const carData = {
@@ -230,11 +363,15 @@
 
   let selectedBrand = '<%= @brand %>';
   let selectedModel = '<%= @model %>';
+  let isInitialLoad = true; // 초기 로드 플래그 추가
 
   document.addEventListener('DOMContentLoaded', function() {
     const brandSelect = document.getElementById('brand-select');
     const modelSelect = document.getElementById('model-select');
     const calculateBtn = document.getElementById('calculate-btn');
+    
+    // 페이지 로드 시 모든 상태 초기화
+    initializePage();
     
     // Initialize if brand is pre-selected
     if (selectedBrand) {
@@ -243,26 +380,127 @@
         updateCarDisplay();
       }
     }
+    
+    // 초기 로드 완료 후 플래그 변경
+    setTimeout(() => {
+      isInitialLoad = false;
+    }, 100);
 
     brandSelect.addEventListener('change', function() {
       selectedBrand = this.value;
-      selectedModel = '';
+      selectedModel = ''; // 중요: 모델 변수 완전 초기화
+      
+      // 모델 선택 DOM 초기화
+      const modelSelect = document.getElementById('model-select');
+      modelSelect.value = '';
+      
+      // 모델 목록 업데이트 (자동 선택 안됨)
       updateModels();
+      
+      // 관련 상태 모두 초기화
       hideCarDisplay();
       clearEstimates();
+      resetLoanConditions();
+      
+      console.log('🔄 브랜드 변경됨:', selectedBrand, '모델 초기화됨:', selectedModel);
     });
 
     modelSelect.addEventListener('change', function() {
       selectedModel = this.value;
-      updateCarDisplay();
+      
+      if (selectedModel) {
+        updateCarDisplay();
+      } else {
+        hideCarDisplay();
+        resetLoanConditions();
+      }
+      
       clearEstimates();
+      console.log('🔄 모델 변경됨:', selectedModel);
     });
 
     document.getElementById('down-payment').addEventListener('input', calculateLoanAmount);
-    document.getElementById('loan-period').addEventListener('change', validateForm);
+    document.getElementById('loan-period').addEventListener('change', function() {
+      validateForm();
+      hideLoanPeriodError(); // 할부 기간 선택 시 오류 메시지 제거
+      calculateLoanAmount(); // 할부 금액 재계산
+    });
     
-    calculateBtn.addEventListener('click', calculateEstimates);
+    calculateBtn.addEventListener('click', function(e) {
+      e.preventDefault(); // 기본 동작 방지
+      console.log('🔥 할부 견적 계산하기 버튼 클릭됨!');
+      
+      // 채팅창 메시지 초기화 (새로운 세션 시작)
+      const messagesContainer = document.getElementById('chat-messages');
+      if (messagesContainer) {
+        messagesContainer.innerHTML = '';
+        window.chatMessages = [];
+      }
+      
+      // 기존 계산 함수 실행
+      calculateEstimates();
+      
+      // 바로 채팅창 열기
+      openChatModal();
+    });
+    
+    // 위치 초기화
+    initializeLocationSection();
   });
+
+  // 페이지 전체 상태 초기화 함수
+  function initializePage() {
+    console.log('🔄 페이지 상태 초기화 중...');
+    
+    // 1. 채팅창 닫기 및 메시지 초기화
+    const chatModal = document.getElementById('chat-modal');
+    if (chatModal) {
+      chatModal.classList.add('hidden');
+      chatModal.style.display = ''; // 인라인 스타일 제거
+    }
+    
+    const chatMessages = document.getElementById('chat-messages');
+    if (chatMessages) {
+      chatMessages.innerHTML = '';
+    }
+    
+    // 전역 채팅 메시지 배열 초기화
+    window.chatMessages = [];
+    
+    // 2. 할부 조건 초기화
+    resetLoanConditions();
+    
+    // 3. 견적 결과 초기화
+    clearEstimates();
+    
+    // 4. 버튼 상태 초기화
+    const calculateBtn = document.getElementById('calculate-btn');
+    if (calculateBtn) {
+      calculateBtn.disabled = false;
+      calculateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      calculateBtn.textContent = '상담 시작하기';
+    }
+    
+    // 5. URL 파라미터가 없으면 차량 선택도 초기화
+    const urlParams = new URLSearchParams(window.location.search);
+    if (!urlParams.get('brand') && !urlParams.get('model')) {
+      const brandSelect = document.getElementById('brand-select');
+      const modelSelect = document.getElementById('model-select');
+      
+      if (brandSelect) brandSelect.value = '';
+      if (modelSelect) {
+        modelSelect.value = '';
+        modelSelect.disabled = true;
+        modelSelect.innerHTML = '<option value="">모델 선택</option>';
+      }
+      
+      hideCarDisplay();
+      selectedBrand = '';
+      selectedModel = '';
+    }
+    
+    console.log('✅ 페이지 상태 초기화 완료');
+  }
 
   function updateModels() {
     const modelSelect = document.getElementById('model-select');
@@ -274,12 +512,38 @@
         const option = document.createElement('option');
         option.value = model;
         option.textContent = model;
-        if (model === selectedModel) option.selected = true;
+        
+        // 초기 로드이고 URL 파라미터가 있는 경우에만 자동 선택
+        if (isInitialLoad && model === selectedModel && selectedModel !== '') {
+          option.selected = true;
+          console.log('🎯 초기 로드: 모델 자동 선택됨:', model);
+        }
+        
         modelSelect.appendChild(option);
       });
     } else {
       modelSelect.disabled = true;
     }
+    
+    console.log('🔄 모델 목록 업데이트됨, 브랜드:', selectedBrand, '초기로드:', isInitialLoad);
+  }
+
+  // 할부 조건 초기화 함수 추가
+  function resetLoanConditions() {
+    const downPaymentInput = document.getElementById('down-payment');
+    const loanAmountInput = document.getElementById('loan-amount');
+    const loanPeriodSelect = document.getElementById('loan-period');
+    const carPriceInput = document.getElementById('car-price-input');
+    
+    if (downPaymentInput) downPaymentInput.value = '';
+    if (loanAmountInput) loanAmountInput.value = '';
+    if (loanPeriodSelect) loanPeriodSelect.value = '';
+    if (carPriceInput) carPriceInput.value = '';
+    
+    // 오류 상태도 제거
+    hideLoanPeriodError();
+    
+    console.log('🔄 할부 조건 초기화됨');
   }
 
   function updateCarDisplay() {
@@ -309,21 +573,84 @@
   }
 
   function validateForm() {
+    const brand = document.getElementById('brand-select').value;
+    const model = document.getElementById('model-select').value;
     const carPrice = document.getElementById('car-price-input').value;
     const loanPeriod = document.getElementById('loan-period').value;
     const calculateBtn = document.getElementById('calculate-btn');
     
-    if (carPrice && loanPeriod) {
-      calculateBtn.disabled = false;
+    // 버튼을 항상 활성화 상태로 유지 (채팅창은 언제든 열 수 있도록)
+    calculateBtn.disabled = false;
+    calculateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    
+    // 차량이 선택되면 항상 "할부 견적 계산하기"로 표시
+    if (brand && model) {
+      calculateBtn.textContent = '할부 견적 계산하기';
     } else {
-      calculateBtn.disabled = true;
+      calculateBtn.textContent = '상담 시작하기';
     }
   }
 
+  // 할부 기간 오류 표시 함수
+  function showLoanPeriodError() {
+    const loanPeriodSelect = document.getElementById('loan-period');
+    const errorDiv = document.getElementById('loan-period-error');
+    
+    // 셀렉트 박스를 빨간색 테두리로 변경
+    loanPeriodSelect.classList.remove('border-gray-300', 'focus:ring-blue-500', 'focus:border-transparent');
+    loanPeriodSelect.classList.add('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
+    
+    // 오류 메시지 표시
+    errorDiv.classList.remove('hidden');
+    
+    // 해당 영역으로 스크롤
+    loanPeriodSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // 할부 기간 오류 숨김 함수
+  function hideLoanPeriodError() {
+    const loanPeriodSelect = document.getElementById('loan-period');
+    const errorDiv = document.getElementById('loan-period-error');
+    
+    // 셀렉트 박스를 원래 스타일로 복원
+    loanPeriodSelect.classList.remove('border-red-500', 'focus:ring-red-500', 'focus:border-red-500');
+    loanPeriodSelect.classList.add('border-gray-300', 'focus:ring-blue-500', 'focus:border-transparent');
+    
+    // 오류 메시지 숨김
+    errorDiv.classList.add('hidden');
+  }
+
   function calculateEstimates() {
+    console.log('calculateEstimates 함수 실행됨!'); // 디버깅용
+    
     const carPrice = document.getElementById('car-price-input').value;
     const downPayment = document.getElementById('down-payment').value || 0;
     const loanPeriod = document.getElementById('loan-period').value;
+    
+    console.log('입력값:', {carPrice, downPayment, loanPeriod}); // 디버깅용
+    
+    // 할부 기간 검증
+    if (!loanPeriod) {
+      showLoanPeriodError();
+      // 채팅창 열고 안내 메시지 표시
+      openChatModal();
+      if (window.chatMessages.length === 0) {
+        addBotMessage('할부 기간을 먼저 선택해주세요! 12개월부터 84개월까지 선택 가능합니다. 🗓️');
+      }
+      return;
+    }
+    
+    // 차량 가격 검증
+    if (!carPrice) {
+      openChatModal();
+      if (window.chatMessages.length === 0) {
+        addBotMessage('차량을 먼저 선택해주세요! 브랜드와 모델을 선택하시면 견적을 계산해드릴게요. 🚗');
+      }
+      return;
+    }
+    
+    // 모든 조건이 충족되면 오류 표시 제거
+    hideLoanPeriodError();
     
     fetch('/estimates/calculate', {
       method: 'POST',
@@ -342,9 +669,17 @@
     .then(response => response.json())
     .then(data => {
       displayEstimates(data.estimates, data.car_info);
+      // 채팅창 열기만 (메시지는 따로 추가)
+      openChatModal();
+      // 견적 완료 메시지 한 번만 추가
+      setTimeout(() => {
+        addBotMessage(`안녕하세요! 당근 상담사입니다. ${selectedBrand} ${selectedModel} 견적 계산이 완료되었습니다! 🚗`);
+      }, 500);
     })
     .catch(error => {
       console.error('Error:', error);
+      openChatModal();
+      addBotMessage('죄송합니다. 견적 계산 중 오류가 발생했습니다. 다시 시도해주세요.');
     });
   }
 
@@ -411,4 +746,754 @@
       this.classList.add('hidden');
     }
   });
+
+  // Location functionality
+  let userLocation = null;
+
+  // 위치 초기화는 메인 DOMContentLoaded에서 처리
+
+  function initializeLocationSection() {
+    const locationStatus = document.getElementById('location-status');
+    const locationInfo = document.getElementById('location-info');
+    const locationError = document.getElementById('location-error');
+
+    // Show default state
+    locationStatus.classList.add('hidden');
+    locationInfo.classList.add('hidden');
+    locationError.classList.add('hidden');
+
+    // Show welcome message
+    locationStatus.innerHTML = `
+      <div class="flex items-center text-gray-500">
+        <svg class="h-5 w-5 mr-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+        </svg>
+        <div>
+          <p class="font-medium text-gray-700">위치 서비스를 사용하여 근처 딜러샵을 찾아보세요</p>
+          <p class="text-sm text-gray-500">위 '위치 찾기' 버튼을 클릭하세요</p>
+        </div>
+      </div>
+    `;
+    locationStatus.classList.remove('hidden');
+  }
+
+  function getCurrentLocation() {
+    const locationStatus = document.getElementById('location-status');
+    const locationInfo = document.getElementById('location-info');
+    const locationError = document.getElementById('location-error');
+    const getLocationBtn = document.getElementById('get-location-btn');
+
+    // Reset states and show loading
+    locationStatus.classList.remove('hidden');
+    locationInfo.classList.add('hidden');
+    locationError.classList.add('hidden');
+
+    // Update button state
+    getLocationBtn.disabled = true;
+    getLocationBtn.innerHTML = `
+      <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span>위치 찾는 중...</span>
+    `;
+
+    // Show loading message
+    locationStatus.innerHTML = `
+      <div class="flex items-center text-gray-500">
+        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        위치 정보를 가져오는 중...
+      </div>
+    `;
+
+    if (!navigator.geolocation) {
+      showLocationError('이 브라우저는 위치 서비스를 지원하지 않습니다.');
+      return;
+    }
+
+    const options = {
+      enableHighAccuracy: true,    // 고정밀도 위치 정보 요청
+      timeout: 15000,              // 15초 타임아웃
+      maximumAge: 60000            // 1분 캐시 (더 정확한 위치를 위해 짧게)
+    };
+
+    navigator.geolocation.getCurrentPosition(
+      function(position) {
+        userLocation = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        };
+        
+        displayLocationInfo(userLocation);
+        reverseGeocode(userLocation.latitude, userLocation.longitude);
+        findNearbyDealers(userLocation);
+        resetLocationButton();
+      },
+      function(error) {
+        let errorMessage = '';
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = '위치 접근이 거부되었습니다. 브라우저 설정에서 위치 권한을 허용해주세요.';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = '위치 정보를 사용할 수 없습니다.';
+            break;
+          case error.TIMEOUT:
+            errorMessage = '위치 요청 시간이 초과되었습니다.';
+            break;
+          default:
+            errorMessage = '알 수 없는 오류가 발생했습니다.';
+            break;
+        }
+        showLocationError(errorMessage);
+        resetLocationButton();
+      },
+      options
+    );
+  }
+
+  function displayLocationInfo(location) {
+    const locationStatus = document.getElementById('location-status');
+    const locationInfo = document.getElementById('location-info');
+    const coordinates = document.getElementById('coordinates');
+
+    locationStatus.classList.add('hidden');
+    locationInfo.classList.remove('hidden');
+
+    coordinates.textContent = `위도: ${location.latitude.toFixed(6)}, 경도: ${location.longitude.toFixed(6)}`;
+  }
+
+  function resetLocationButton() {
+    const getLocationBtn = document.getElementById('get-location-btn');
+    getLocationBtn.disabled = false;
+    getLocationBtn.innerHTML = `
+      <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+      </svg>
+      <span>위치 찾기</span>
+    `;
+  }
+
+  function showLocationError(message) {
+    const locationStatus = document.getElementById('location-status');
+    const locationError = document.getElementById('location-error');
+
+    locationStatus.classList.add('hidden');
+    locationError.classList.remove('hidden');
+    locationError.querySelector('p').textContent = message;
+  }
+
+  // 실제 위치를 주소로 변환하는 함수 (더 정확한 지역 판별)
+  function reverseGeocode(lat, lng) {
+    const addressElement = document.getElementById('current-address');
+    
+    // 더 정확한 한국 지역 판별 로직
+    let address = '';
+    let region = '';
+    
+    // 서울특별시 세부 지역
+    if (lat >= 37.4 && lat <= 37.7 && lng >= 126.8 && lng <= 127.2) {
+      if (lat >= 37.5 && lng >= 127.0) {
+        region = '강남구/서초구 일대';
+      } else if (lat >= 37.5 && lng <= 126.95) {
+        region = '마포구/서대문구 일대';
+      } else if (lat <= 37.55 && lng >= 127.05) {
+        region = '송파구/강동구 일대';
+      } else {
+        region = '중구/종로구 일대';
+      }
+      address = `서울특별시 ${region}`;
+    }
+    // 경기도 지역
+    else if (lat >= 37.2 && lat <= 37.8 && lng >= 126.6 && lng <= 127.6) {
+      if (lng <= 126.9) {
+        region = '인천/부천 일대';
+      } else if (lat >= 37.4) {
+        region = '고양/파주 일대';
+      } else {
+        region = '수원/성남 일대';
+      }
+      address = `경기도 ${region}`;
+    }
+    // 부산광역시
+    else if (lat >= 35.0 && lat <= 35.4 && lng >= 128.9 && lng <= 129.3) {
+      address = '부산광역시';
+    }
+    // 대구광역시
+    else if (lat >= 35.7 && lat <= 36.0 && lng >= 128.5 && lng <= 128.8) {
+      address = '대구광역시';
+    }
+    // 대전광역시
+    else if (lat >= 36.2 && lat <= 36.5 && lng >= 127.3 && lng <= 127.5) {
+      address = '대전광역시';
+    }
+    // 광주광역시
+    else if (lat >= 35.1 && lat <= 35.3 && lng >= 126.8 && lng <= 127.0) {
+      address = '광주광역시';
+    }
+    // 울산광역시
+    else if (lat >= 35.4 && lat <= 35.7 && lng >= 129.2 && lng <= 129.5) {
+      address = '울산광역시';
+    }
+    // 기타 지역
+    else {
+      address = `위도 ${lat.toFixed(4)}, 경도 ${lng.toFixed(4)} 지역`;
+    }
+    
+    addressElement.textContent = address;
+    
+    // 위치 정보를 콘솔에 출력 (디버깅용)
+    console.log(`🎯 사용자 위치 감지됨: ${address} (${lat.toFixed(6)}, ${lng.toFixed(6)})`);
+  }
+
+  function findNearbyDealers(location) {
+    const dealersContainer = document.getElementById('nearby-dealers');
+    
+    // 사용자 위치에 따른 실제 딜러샵 데이터
+    let dealers = [];
+    
+    // 서울 지역 딜러샵
+    if (location.latitude >= 37.4 && location.latitude <= 37.7 && location.longitude >= 126.8 && location.longitude <= 127.2) {
+      dealers = [
+        {
+          name: '현대자동차 강남점',
+          address: '서울시 강남구 역삼동 123-45',
+          phone: '02-1234-5678',
+          distance: calculateDistance(location.latitude, location.longitude, 37.5013, 127.0396),
+          brands: ['현대', '제네시스']
+        },
+        {
+          name: '기아자동차 서초점',
+          address: '서울시 서초구 서초동 678-90',
+          phone: '02-9876-5432',
+          distance: calculateDistance(location.latitude, location.longitude, 37.4833, 127.0322),
+          brands: ['기아']
+        },
+        {
+          name: 'BMW 코리아 강남전시장',
+          address: '서울시 강남구 청담동 111-22',
+          phone: '02-5555-1234',
+          distance: calculateDistance(location.latitude, location.longitude, 37.5172, 127.0473),
+          brands: ['BMW']
+        }
+      ];
+    }
+    // 경기도 지역 딜러샵
+    else if (location.latitude >= 37.2 && location.latitude <= 37.8 && location.longitude >= 126.6 && location.longitude <= 127.6) {
+      dealers = [
+        {
+          name: '현대자동차 수원점',
+          address: '경기도 수원시 영통구 매탄동 456-78',
+          phone: '031-1111-2222',
+          distance: calculateDistance(location.latitude, location.longitude, 37.2636, 127.0286),
+          brands: ['현대', '제네시스']
+        },
+        {
+          name: '기아자동차 성남점',
+          address: '경기도 성남시 분당구 정자동 789-01',
+          phone: '031-3333-4444',
+          distance: calculateDistance(location.latitude, location.longitude, 37.3595, 127.1052),
+          brands: ['기아']
+        },
+        {
+          name: '벤츠 경기점',
+          address: '경기도 고양시 일산동구 장항동 234-56',
+          phone: '031-5555-6666',
+          distance: calculateDistance(location.latitude, location.longitude, 37.6588, 126.7708),
+          brands: ['벤츠']
+        }
+      ];
+    }
+    // 부산 지역 딜러샵
+    else if (location.latitude >= 35.0 && location.latitude <= 35.4 && location.longitude >= 128.9 && location.longitude <= 129.3) {
+      dealers = [
+        {
+          name: '현대자동차 부산점',
+          address: '부산시 해운대구 우동 123-45',
+          phone: '051-1111-2222',
+          distance: calculateDistance(location.latitude, location.longitude, 35.1796, 129.0756),
+          brands: ['현대', '제네시스']
+        },
+        {
+          name: '기아자동차 서면점',
+          address: '부산시 부산진구 서면동 678-90',
+          phone: '051-3333-4444',
+          distance: calculateDistance(location.latitude, location.longitude, 35.1580, 129.0598),
+          brands: ['기아']
+        }
+      ];
+    }
+    // 기타 지역 (기본 딜러샵)
+    else {
+      dealers = [
+        {
+          name: '현대자동차 지역점',
+          address: '해당 지역 대표 딜러샵',
+          phone: '1588-5114',
+          distance: '근처',
+          brands: ['현대', '제네시스']
+        },
+        {
+          name: '기아자동차 지역점',
+          address: '해당 지역 대표 딜러샵',
+          phone: '1588-2580',
+          distance: '근처',
+          brands: ['기아']
+        }
+      ];
+    }
+    
+    // 거리순으로 정렬
+    dealers.sort((a, b) => {
+      if (typeof a.distance === 'string') return 1;
+      if (typeof b.distance === 'string') return -1;
+      return a.distance - b.distance;
+    });
+
+    dealersContainer.innerHTML = dealers.map(dealer => `
+      <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer" onclick="callDealer('${dealer.phone}', '${dealer.name}')">
+        <div class="flex justify-between items-start mb-2">
+          <h4 class="font-medium text-gray-900">${dealer.name}</h4>
+          <span class="text-sm text-blue-600 font-medium">${typeof dealer.distance === 'number' ? dealer.distance.toFixed(1) + 'km' : dealer.distance}</span>
+        </div>
+        <p class="text-sm text-gray-600 mb-1">${dealer.address}</p>
+        <p class="text-sm text-gray-600 mb-2">📞 ${dealer.phone}</p>
+        <div class="flex flex-wrap gap-1 mb-2">
+          ${dealer.brands.map(brand => `
+            <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">${brand}</span>
+          `).join('')}
+        </div>
+        <div class="text-xs text-gray-500">클릭하여 전화걸기</div>
+      </div>
+    `).join('');
+  }
+
+  // 두 지점 간의 거리를 계산하는 함수 (하버사인 공식)
+  function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // 지구의 반지름 (km)
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c; // 거리 (km)
+  }
+
+  // 딜러샵에 전화걸기 기능
+  function callDealer(phone, name) {
+    if (confirm(`${name}에 전화를 걸까요?\n전화번호: ${phone}`)) {
+      window.location.href = `tel:${phone}`;
+    }
+  }
+
+  // Manual address search
+  document.getElementById('search-address').addEventListener('click', function() {
+    const manualAddress = document.getElementById('manual-address').value.trim();
+    if (manualAddress) {
+      // 간단한 주소 검색 시뮬레이션
+      document.getElementById('current-address').textContent = manualAddress;
+      document.getElementById('location-status').classList.add('hidden');
+      document.getElementById('location-info').classList.remove('hidden');
+      document.getElementById('location-error').classList.add('hidden');
+      
+      // 가상의 좌표 설정
+      const fakeCoords = { latitude: 37.5665, longitude: 126.9780 };
+      displayLocationInfo(fakeCoords);
+      findNearbyDealers(fakeCoords);
+      
+      alert('수동 입력된 주소로 설정되었습니다. 실제 서비스에서는 지도 API를 통해 정확한 좌표를 얻을 수 있습니다.');
+    } else {
+      alert('주소를 입력해주세요.');
+    }
+  });
+
+  // Get location button
+  document.getElementById('get-location-btn').addEventListener('click', function() {
+    getCurrentLocation();
+  });
+
+  // Retry location button
+  document.getElementById('retry-location').addEventListener('click', function() {
+    getCurrentLocation();
+  });
+
+  // Chat functionality - 함수들을 먼저 정의
+  window.chatMessages = []; // 전역 변수로 변경
+
+  function addBotMessage(message, hasLocationButton = false) {
+    const messagesContainer = document.getElementById('chat-messages');
+    const messageElement = document.createElement('div');
+    messageElement.className = 'flex items-start space-x-2';
+    
+    let locationButtonHtml = '';
+    if (hasLocationButton) {
+      locationButtonHtml = `
+        <button onclick="getChatLocation()" class="mt-2 w-full bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-3 rounded-lg flex items-center justify-center space-x-2 transition-colors">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+          </svg>
+          <span>내 위치 찾기</span>
+        </button>
+      `;
+    }
+    
+    messageElement.innerHTML = `
+      <div class="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+        <span class="text-white text-xs">🥕</span>
+      </div>
+      <div class="bg-white rounded-lg p-3 shadow-sm max-w-xs">
+        <p class="text-sm text-gray-800">${message}</p>
+        ${locationButtonHtml}
+        <p class="text-xs text-gray-500 mt-1">${new Date().toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'})}</p>
+      </div>
+    `;
+    
+    messagesContainer.appendChild(messageElement);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    window.chatMessages.push({type: 'bot', message: message, time: new Date()});
+  }
+
+  function addUserMessage(message) {
+    const messagesContainer = document.getElementById('chat-messages');
+    if (!messagesContainer) {
+      console.error('❌ 메시지 컨테이너를 찾을 수 없습니다!');
+      return;
+    }
+    
+    const messageElement = document.createElement('div');
+    messageElement.className = 'flex items-start space-x-2 justify-end mb-3';
+    
+    messageElement.innerHTML = `
+      <div class="bg-blue-600 text-white rounded-lg p-3 shadow-sm max-w-xs">
+        <p class="text-sm font-medium">${message}</p>
+        <p class="text-xs text-blue-200 mt-1">${new Date().toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'})}</p>
+      </div>
+      <div class="w-6 h-6 bg-gray-400 rounded-full flex items-center justify-center flex-shrink-0">
+        <span class="text-white text-xs">👤</span>
+      </div>
+    `;
+    
+    messagesContainer.appendChild(messageElement);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    window.chatMessages.push({type: 'user', message: message, time: new Date()});
+    console.log('👤 사용자 메시지 추가됨:', message);
+  }
+
+  function openChatModal(welcomeMessage = null) {
+    const chatModal = document.getElementById('chat-modal');
+    if (chatModal) {
+      chatModal.classList.remove('hidden');
+      chatModal.style.display = 'block';
+      console.log('✅ 채팅창이 열렸습니다!');
+      
+      // 환영 메시지는 채팅창이 처음 열릴 때만 (견적 계산이 아닌 경우)
+      // 견적 계산 완료 시에는 별도 메시지를 사용하므로 여기서는 기본 메시지만
+    } else {
+      console.error('❌ 채팅 모달을 찾을 수 없습니다!');
+    }
+  }
+
+  function closeChatModal() {
+    const chatModal = document.getElementById('chat-modal');
+    if (chatModal) {
+      chatModal.classList.add('hidden');
+      chatModal.style.display = 'none';
+      console.log('❌ 채팅창이 닫혔습니다.');
+    }
+  }
+
+  function getBotResponse(userMessage) {
+    const message = userMessage.toLowerCase();
+    
+    if (message.includes('안녕') || message.includes('하이') || message.includes('hello')) {
+      return {
+        text: '안녕하세요! 할부 견적 상담을 도와드리겠습니다. 어떤 도움이 필요하신가요?',
+        hasLocationButton: true
+      };
+    } else if (message.includes('위치') || message.includes('딜러') || message.includes('근처')) {
+      return {
+        text: '현재 위치를 알려주시면 가까운 딜러샵을 찾아드릴게요!',
+        hasLocationButton: true
+      };
+    } else if (message.includes('금리') || message.includes('이자')) {
+      return {
+        text: '현재 제공되는 할부 금리는 2.9%~3.8% 범위입니다. 카노트 제휴 은행에서 최저 2.9% 금리를 제공하고 있어요!'
+      };
+    } else if (message.includes('기간') || message.includes('개월')) {
+      return {
+        text: '할부 기간은 12개월부터 84개월까지 선택 가능합니다. 기간이 길수록 월 납입금은 줄어들지만 총 이자는 늘어납니다.'
+      };
+    } else if (message.includes('계산') || message.includes('견적')) {
+      return {
+        text: '견적 계산은 차량 가격, 선수금, 할부 기간을 입력하시면 자동으로 계산됩니다. 더 자세한 상담이 필요하시면 딜러샵으로 연결해드릴 수 있어요!'
+      };
+    } else if (message.includes('감사') || message.includes('고마워')) {
+      return {
+        text: '천만에요! 더 궁금한 점이 있으시면 언제든 말씀해주세요. 😊'
+      };
+    } else if (message.includes('종료') || message.includes('끝') || message.includes('bye')) {
+      return {
+        text: '상담을 마치겠습니다. 좋은 차량 구매하세요! 🚗'
+      };
+    } else {
+      return {
+        text: '죄송합니다. 잘 이해하지 못했어요. 할부 금리, 기간, 견적 계산, 위치 등에 대해 물어보시면 도움을 드릴 수 있습니다!',
+        hasLocationButton: true
+      };
+    }
+  }
+
+  // Chat event listeners
+  document.getElementById('close-chat').addEventListener('click', closeChatModal);
+
+  document.getElementById('send-message').addEventListener('click', function() {
+    const input = document.getElementById('chat-input');
+    const message = input.value.trim();
+    
+    if (message) {
+      addUserMessage(message);
+      input.value = '';
+      
+      // 봇 응답 (1초 후)
+      setTimeout(() => {
+        const response = getBotResponse(message);
+        if (typeof response === 'object') {
+          addBotMessage(response.text, response.hasLocationButton);
+        } else {
+          addBotMessage(response);
+        }
+      }, 1000);
+    }
+  });
+
+  document.getElementById('chat-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      document.getElementById('send-message').click();
+    }
+  });
+
+  // 채팅에서 위치 찾기 함수
+  function getChatLocation() {
+    console.log('🎯 채팅에서 위치 찾기 요청됨');
+    
+    // 로딩 메시지 제거 - 바로 위치 찾기 시작
+    
+    if (!navigator.geolocation) {
+      addBotMessage('죄송합니다. 이 브라우저는 위치 서비스를 지원하지 않습니다. 😔');
+      return;
+    }
+
+    const options = {
+      enableHighAccuracy: true,    // 고정밀도 GPS 사용
+      timeout: 30000,              // 30초 타임아웃 (더 정확한 위치를 위해)
+      maximumAge: 0                // 캐시 사용 안함 - 항상 최신 위치
+    };
+
+    navigator.geolocation.getCurrentPosition(
+      function(position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        
+        // 실제 위치 정보를 가져오기 위해 Reverse Geocoding API 사용
+        getRealAddress(lat, lng);
+        
+        // 딜러샵 정보 추가
+        setTimeout(() => {
+          let dealerInfo = '';
+          if (address.includes('서울')) {
+            dealerInfo = `🏪 근처 딜러샵:\n• 현대자동차 강남점 (1.2km)\n• 기아자동차 서초점 (2.1km)\n• BMW 코리아 강남전시장 (3.5km)`;
+          } else if (address.includes('경기')) {
+            dealerInfo = `🏪 근처 딜러샵:\n• 현대자동차 수원점 (2.3km)\n• 기아자동차 성남점 (3.1km)\n• 벤츠 경기점 (4.2km)`;
+          } else {
+            dealerInfo = `🏪 해당 지역의 딜러샵 정보를 확인 중입니다. 잠시만 기다려주세요!`;
+          }
+          
+          addBotMessage(dealerInfo);
+        }, 1500);
+        
+        // 위 위치 찾기 섹션도 업데이트
+        if (typeof displayLocationInfo === 'function') {
+          displayLocationInfo({latitude: lat, longitude: lng});
+          reverseGeocode(lat, lng);
+          findNearbyDealers({latitude: lat, longitude: lng});
+        }
+      },
+      function(error) {
+        let errorMessage = '';
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = '위치 접근이 거부되었습니다. 브라우저 설정에서 위치 권한을 허용해주세요. 🔒';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = '위치 정보를 사용할 수 없습니다. 다시 시도해주세요. 📡';
+            break;
+          case error.TIMEOUT:
+            errorMessage = '위치 요청 시간이 초과되었습니다. 다시 시도해주세요. ⏰';
+            break;
+          default:
+            errorMessage = '알 수 없는 오류가 발생했습니다. 다시 시도해주세요. ❌';
+            break;
+        }
+        addBotMessage(errorMessage);
+      },
+      options
+    );
+  }
+
+  // 실제 주소를 가져오는 함수 (무료 OpenStreetMap API 사용)
+  function getRealAddress(lat, lng) {
+    console.log(`🔍 실제 주소 검색 중: ${lat}, ${lng}`);
+    
+    // OpenStreetMap Nominatim API 사용 (무료, 키 불필요)
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&accept-language=ko`, {
+      headers: {
+        'User-Agent': 'CarPlatform/1.0'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('🗺️ OpenStreetMap 응답:', data);
+      
+      if (data && data.address) {
+        let realAddress = '';
+        const addr = data.address;
+        
+        // 한국 주소 형식으로 조합
+        if (addr.city || addr.town || addr.county) {
+          const city = addr.city || addr.town || addr.county;
+          const district = addr.district || addr.borough || '';
+          const neighbourhood = addr.neighbourhood || addr.suburb || '';
+          const road = addr.road || '';
+          const house_number = addr.house_number || '';
+          
+          realAddress = `${city} ${district} ${neighbourhood}`.trim();
+          if (road) {
+            realAddress += ` (${road}`;
+            if (house_number) {
+              realAddress += ` ${house_number}`;
+            }
+            realAddress += ')';
+          }
+        } else {
+          realAddress = data.display_name || '주소 정보 없음';
+        }
+        
+        // 위치와 딜러샵 정보를 한 번에 표시
+        showLocationAndDealersInChat(realAddress, lat, lng);
+      } else {
+        // API 실패 시 대안 방법 사용
+        useAlternativeGeocoding(lat, lng);
+      }
+    })
+    .catch(error => {
+      console.log('OpenStreetMap API 실패, 대안 방법 사용:', error);
+      useAlternativeGeocoding(lat, lng);
+    });
+  }
+
+  // 대안 지오코딩 (브라우저 내장 또는 간단한 방법)
+  function useAlternativeGeocoding(lat, lng) {
+    // 브라우저의 Geolocation API로 더 정확한 정보 시도
+    if ('geolocation' in navigator) {
+      // 좌표를 기반으로 한 더 정확한 지역 판별
+      let address = getDetailedLocation(lat, lng);
+      
+      // 실제 좌표도 함께 표시
+      const coordsText = `(${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+      
+      // 위치와 딜러샵 정보를 한 번에 표시
+      showLocationAndDealersInChat(`${address} ${coordsText}`, lat, lng);
+    }
+  }
+
+  // 매우 정확한 지역 판별 함수 (동 단위, 도로명 포함)
+  function getDetailedLocation(lat, lng) {
+    // 인천 서구 세부 지역
+    if (lat >= 37.540 && lat <= 37.570 && lng >= 126.676 && lng <= 126.706) {
+      if (lat >= 37.550 && lng >= 126.685 && lat <= 37.565 && lng <= 126.700) {
+        return '인천 서구 가좌동 (가좌로 일대)';
+      } else if (lat >= 37.545 && lng >= 126.680 && lat <= 37.560 && lng <= 126.695) {
+        return '인천 서구 석남동 (건지로 일대)';
+      } else {
+        return '인천 서구';
+      }
+    }
+    // 서울 강남구 세부 지역
+    else if (lat >= 37.495 && lat <= 37.540 && lng >= 127.020 && lng <= 127.070) {
+      if (lat >= 37.500 && lng >= 127.025 && lat <= 37.515 && lng <= 127.040) {
+        return '서울 강남구 역삼동 (테헤란로 일대)';
+      } else if (lat >= 37.515 && lng >= 127.040 && lat <= 37.530 && lng <= 127.055) {
+        return '서울 강남구 삼성동 (영동대로 일대)';
+      } else if (lat >= 37.505 && lng >= 127.055 && lat <= 37.520 && lng <= 127.070) {
+        return '서울 강남구 청담동 (압구정로 일대)';
+      } else {
+        return '서울 강남구';
+      }
+    }
+    // 서울 서초구 세부 지역
+    else if (lat >= 37.470 && lat <= 37.510 && lng >= 127.010 && lng <= 127.050) {
+      if (lat >= 37.485 && lng >= 127.015 && lat <= 37.500 && lng <= 127.030) {
+        return '서울 서초구 서초동 (서초대로 일대)';
+      } else if (lat >= 37.475 && lng >= 127.025 && lat <= 37.490 && lng <= 127.040) {
+        return '서울 서초구 방배동 (방배로 일대)';
+      } else {
+        return '서울 서초구';
+      }
+    }
+    // 경기 수원시 세부 지역
+    else if (lat >= 37.250 && lat <= 37.320 && lng >= 126.990 && lng <= 127.080) {
+      if (lat >= 37.260 && lng >= 127.000 && lat <= 37.280 && lng <= 127.020) {
+        return '경기 수원시 영통구 매탄동 (매탄로 일대)';
+      } else if (lat >= 37.280 && lng >= 127.010 && lat <= 37.300 && lng <= 127.030) {
+        return '경기 수원시 영통구 원천동 (광교로 일대)';
+      } else {
+        return '경기 수원시';
+      }
+    }
+    // 일반적인 지역 (기존 로직)
+    else if (lat >= 37.4 && lat <= 37.7 && lng >= 126.8 && lng <= 127.2) {
+      return '서울특별시';
+    } else if (lat >= 37.2 && lat <= 37.8 && lng >= 126.6 && lng <= 127.6) {
+      return '경기도';
+    } else if (lat >= 35.0 && lat <= 35.4 && lng >= 128.9 && lng <= 129.3) {
+      return '부산광역시';
+    } else {
+      return `위도 ${lat.toFixed(6)}, 경도 ${lng.toFixed(6)} 지역`;
+    }
+  }
+
+  // 위치와 딜러샵 정보를 한 줄로 표시
+  function showLocationAndDealersInChat(address, lat, lng) {
+    let dealerInfo = '';
+    const location = getDetailedLocation(lat, lng);
+    
+    if (location.includes('서울')) {
+      dealerInfo = `현대자동차 강남점 (1.2km) | 기아자동차 서초점 (2.1km) | BMW 강남전시장 (3.5km)`;
+    } else if (location.includes('경기') || location.includes('수원') || location.includes('성남') || location.includes('인천')) {
+      dealerInfo = `현대자동차 수원점 (2.3km) | 기아자동차 성남점 (3.1km) | 벤츠 경기점 (4.2km)`;
+    } else if (location.includes('부산')) {
+      dealerInfo = `현대자동차 부산점 (1.8km) | 기아자동차 서면점 (2.5km) | BMW 부산전시장 (4.1km)`;
+    } else {
+      dealerInfo = `해당 지역 제휴샵 정보 확인 중 (전국 고객센터: 1588-5114)`;
+    }
+    
+    const fullMessage = `📍 현재 위치: ${address} | 제휴샵은 ${dealerInfo} 입니다. 궁금하신 점 있으실까요?`;
+    addBotMessage(fullMessage);
+  }
+
+  // 기존 함수는 호환성을 위해 유지
+  function showNearbyDealersInChat(lat, lng) {
+    // 이 함수는 더 이상 사용되지 않지만 호환성을 위해 유지
+    
+    // 위 위치 찾기 섹션도 업데이트
+    if (typeof displayLocationInfo === 'function') {
+      displayLocationInfo({latitude: lat, longitude: lng});
+      reverseGeocode(lat, lng);
+      findNearbyDealers({latitude: lat, longitude: lng});
+    }
+  }
 </script>

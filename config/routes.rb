@@ -1,30 +1,30 @@
 Rails.application.routes.draw do
-  resources :conversations, only: [:index, :create, :show] do
-    resources :messages, only: [:create]
+  resources :conversations, only: [ :index, :create, :show ] do
+    resources :messages, only: [ :create ]
   end
-  
-  resources :favorites, only: [:index, :create]
-  delete 'favorites/:id', to: 'favorites#destroy', as: :favorite
-  resources :cars, only: [:index, :show] do
-    resources :reviews, only: [:create, :destroy]
-    resources :price_alerts, only: [:create]
+
+  resources :favorites, only: [ :index, :create ]
+  delete "favorites/:id", to: "favorites#destroy", as: :favorite
+  resources :cars, only: [ :index, :show ] do
+    resources :reviews, only: [ :create, :destroy ]
+    resources :price_alerts, only: [ :create ]
   end
-  
+
   # Estimate routes
-  get 'estimates/start', to: 'estimates#start'
-  post 'estimates/calculate', to: 'estimates#calculate'
-  get 'estimates/quote_popup', to: 'estimates#quote_popup'
-  
-  resources :car_comparisons, only: [:index] do
+  get "estimates/start", to: "estimates#start"
+  post "estimates/calculate", to: "estimates#calculate"
+  get "estimates/quote_popup", to: "estimates#quote_popup"
+
+  resources :car_comparisons, only: [ :index ] do
     collection do
       post :add
       delete :remove
       delete :clear
     end
   end
-  
-  resources :price_alerts, only: [:index, :destroy]
-  resources :notifications, only: [:index] do
+
+  resources :price_alerts, only: [ :index, :destroy ]
+  resources :notifications, only: [ :index ] do
     member do
       patch :mark_as_read
     end
@@ -32,16 +32,16 @@ Rails.application.routes.draw do
       patch :mark_all_as_read
     end
   end
-  
-  resource :user, only: [:show, :edit, :update]
+
+  resource :user, only: [ :show, :edit, :update ]
 
   scope :admin do
     get "/", to: "admin#index", as: :admin
-    resources :users, only: [:edit, :update, :destroy], controller: "admin", as: :admin_users
-    resources :cars, only: [:new, :create, :edit, :update, :destroy], controller: "admin", as: :admin_cars
+    resources :users, only: [ :edit, :update, :destroy ], controller: "admin", as: :admin_users
+    resources :cars, only: [ :new, :create, :edit, :update, :destroy ], controller: "admin", as: :admin_cars
   end
 
-  devise_for :users
+  devise_for :users, controllers: { sessions: 'sessions' }
   root "home#index"
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

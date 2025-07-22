@@ -7,9 +7,9 @@ class ReviewsController < ApplicationController
     @review.user = current_user
 
     if @review.save
-      redirect_to @car, notice: '리뷰가 성공적으로 작성되었습니다.'
+      redirect_to @car, notice: "리뷰가 성공적으로 작성되었습니다."
     else
-      redirect_to @car, alert: '리뷰 작성에 실패했습니다: ' + @review.errors.full_messages.to_sentence
+      redirect_to @car, alert: "리뷰 작성에 실패했습니다: " + @review.errors.full_messages.to_sentence
     end
   end
 
@@ -17,9 +17,9 @@ class ReviewsController < ApplicationController
     @review = @car.reviews.find(params[:id])
     if @review.user == current_user
       @review.destroy
-      redirect_to @car, notice: '리뷰가 성공적으로 삭제되었습니다.'
+      redirect_to @car, notice: "리뷰가 성공적으로 삭제되었습니다."
     else
-      redirect_to @car, alert: '리뷰를 삭제할 권한이 없습니다.'
+      redirect_to @car, alert: "리뷰를 삭제할 권한이 없습니다."
     end
   end
 

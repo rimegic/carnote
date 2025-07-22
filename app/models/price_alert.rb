@@ -22,7 +22,7 @@ class PriceAlert < ApplicationRecord
       notifiable: car,
       title: "가격 알림: #{car.display_name}",
       message: "설정하신 목표 가격 ₩#{target_price.to_i}에 도달했습니다! 현재 가격: ₩#{car.price.to_i}",
-      notification_type: 'price_alert'
+      notification_type: "price_alert"
     )
   end
 end

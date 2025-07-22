@@ -1,49 +1,105 @@
-<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-  <div class="sm:mx-auto sm:w-full sm:max-w-sm">
-    <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900 dark:text-white">프로필 수정</h2>
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Header -->
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">프로필 수정</h1>
+    <p class="text-gray-600">개인정보를 안전하게 관리하세요</p>
   </div>
 
-  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+  <!-- Profile Edit Form -->
+  <div class="bg-white rounded-xl shadow-lg p-8">
     <%= form_for(@user, url: user_path, method: :patch, html: { class: "space-y-6" }) do |f| %>
       <% if @user.errors.any? %>
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-          <h2 class="font-bold mb-2">오류 발생:</h2>
-          <ul class="list-disc list-inside">
-            <% @user.errors.full_messages.each do |message| %>
-              <li><%= message %></li>
-            <% end %>
-          </ul>
+        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg" role="alert">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">오류가 발생했습니다</h3>
+              <div class="mt-2 text-sm text-red-700">
+                <ul class="list-disc list-inside space-y-1">
+                  <% @user.errors.full_messages.each do |message| %>
+                    <li><%= message %></li>
+                  <% end %>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
       <% end %>
 
+      <!-- Name Field -->
       <div>
-        <%= f.label :email, "이메일 주소", class: "block text-sm font-medium leading-6 text-gray-900 dark:text-white" %>
-        <div class="mt-2">
-          <%= f.email_field :email, autocomplete: "email", class: "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:focus:ring-indigo-500" %>
+        <%= f.label :name, "이름", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= f.text_field :name, 
+            placeholder: "이름을 입력하세요",
+            class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" %>
+      </div>
+
+      <!-- Email Field -->
+      <div>
+        <%= f.label :email, "이메일 주소", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= f.email_field :email, 
+            autocomplete: "email",
+            placeholder: "example@email.com",
+            class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" %>
+      </div>
+
+      <!-- Password Section -->
+      <div class="border-t border-gray-200 pt-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">비밀번호 변경</h3>
+        <p class="text-sm text-gray-600 mb-4">비밀번호를 변경하지 않으려면 아래 필드들을 비워두세요.</p>
+        
+        <div class="space-y-4">
+          <div>
+            <%= f.label :password, "새 비밀번호", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= f.password_field :password, 
+                autocomplete: "new-password",
+                placeholder: "새 비밀번호를 입력하세요",
+                class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" %>
+          </div>
+
+          <div>
+            <%= f.label :password_confirmation, "새 비밀번호 확인", class: "block text-sm font-medium text-gray-700 mb-2" %>
+            <%= f.password_field :password_confirmation, 
+                autocomplete: "new-password",
+                placeholder: "새 비밀번호를 다시 입력하세요",
+                class: "w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" %>
+          </div>
         </div>
       </div>
 
-      <div>
-        <%= f.label :password, "새 비밀번호 (변경하지 않으려면 비워두세요)", class: "block text-sm font-medium leading-6 text-gray-900 dark:text-white" %><br />
-        <div class="mt-2">
-          <%= f.password_field :password, autocomplete: "new-password", class: "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:focus:ring-indigo-500" %>
-        </div>
-      </div>
-
-      <div>
-        <%= f.label :password_confirmation, "새 비밀번호 확인", class: "block text-sm font-medium leading-6 text-gray-900 dark:text-white" %><br />
-        <div class="mt-2">
-          <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-gray-700 dark:text-white dark:ring-gray-600 dark:focus:ring-indigo-500" %>
-        </div>
-      </div>
-
-      <div>
-        <%= f.submit "프로필 업데이트", class: "flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:hover:bg-indigo-400" %>
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4 pt-6">
+        <%= f.submit "프로필 업데이트", 
+            class: "flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" %>
+        <%= link_to "취소", user_path, 
+            class: "flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg text-center transition-colors duration-200" %>
       </div>
     <% end %>
+  </div>
 
-    <p class="mt-10 text-center text-sm text-gray-500 dark:text-gray-400">
-      <%= link_to "뒤로가기", user_path, class: "font-semibold leading-6 text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300" %>
-    </p>
+  <!-- Additional Actions -->
+  <div class="mt-8 text-center">
+    <div class="bg-gray-50 rounded-lg p-6">
+      <h3 class="text-lg font-medium text-gray-900 mb-2">계정 관리</h3>
+      <p class="text-sm text-gray-600 mb-4">계정과 관련된 추가 작업을 수행할 수 있습니다.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <%= link_to favorites_path, class: "inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+          </svg>
+          찜한 차량 관리
+        <% end %>
+        <%= link_to price_alerts_path, class: "inline-flex items-center px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white font-medium rounded-lg transition-colors" do %>
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5-5-5h5v-12h5v12z"></path>
+          </svg>
+          가격 알림 설정
+        <% end %>
+      </div>
+    </div>
   </div>
 </div>

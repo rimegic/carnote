@@ -9,7 +9,7 @@ class MessagesController < ApplicationController
     if @message.save
       redirect_to conversation_path(@conversation)
     else
-      redirect_to conversation_path(@conversation), alert: '메시지 전송에 실패했습니다.'
+      redirect_to conversation_path(@conversation), alert: "메시지 전송에 실패했습니다."
     end
   end
 

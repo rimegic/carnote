@@ -1,6 +1,6 @@
 class Car < ApplicationRecord
   include Cacheable
-  
+
   belongs_to :user
   has_many_attached :images
   has_many :favorites, dependent: :destroy
@@ -8,11 +8,11 @@ class Car < ApplicationRecord
   has_many :reviews, dependent: :destroy
 
   def self.ransackable_attributes(auth_object = nil)
-    ["color", "created_at", "description", "id", "make", "mileage", "model", "price", "updated_at", "year"]
+    [ "color", "created_at", "description", "id", "make", "mileage", "model", "price", "updated_at", "year" ]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["favorites", "favorited_by_users", "reviews", "user"]
+    [ "favorites", "favorited_by_users", "reviews", "user" ]
   end
 
   def average_rating

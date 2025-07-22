@@ -7,7 +7,7 @@ class CarComparisonsController < ApplicationController
   def add
     @car = Car.find(params[:car_id])
     session[:comparison_cars] ||= []
-    
+
     unless session[:comparison_cars].include?(@car.id)
       if session[:comparison_cars].length < 3
         session[:comparison_cars] << @car.id
@@ -18,7 +18,7 @@ class CarComparisonsController < ApplicationController
     else
       flash[:alert] = "이미 비교 목록에 있는 차량입니다."
     end
-    
+
     redirect_back(fallback_location: cars_path)
   end
 
@@ -26,7 +26,7 @@ class CarComparisonsController < ApplicationController
     @car = Car.find(params[:car_id])
     session[:comparison_cars] ||= []
     session[:comparison_cars].delete(@car.id)
-    
+
     flash[:notice] = "#{@car.make} #{@car.model}이(가) 비교 목록에서 제거되었습니다."
     redirect_back(fallback_location: car_comparisons_path)
   end

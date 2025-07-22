@@ -1,41 +1,50 @@
 <!-- Page Header -->
-<div class="bg-white border-b border-gray-200">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <h1 class="text-3xl font-bold text-gray-900">신차 견적</h1>
-    <p class="mt-2 text-gray-600">전국 700개 전시장의 실시간 할인 정보를 확인하세요</p>
+<div class="bg-gradient-to-r from-white to-gray-50 border-b border-gray-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6 sm:py-8 lg:py-12">
+    <div class="text-center sm:text-left">
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">신차 견적</h1>
+      <p class="text-sm sm:text-base lg:text-lg text-gray-600 max-w-2xl mx-auto sm:mx-0">전국 700개 전시장의 실시간 할인 정보를 확인하세요</p>
+    </div>
   </div>
 </div>
 
 <!-- Search Filters -->
-<div class="bg-gray-50 py-6">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <%= search_form_for @q, url: cars_path, method: :get, class: "bg-white rounded-lg shadow-sm p-6" do |f| %>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <div>
-          <%= f.text_field :make_cont, placeholder: "제조사", class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+<div class="bg-gray-50 py-4 sm:py-6 lg:py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
+    <%= search_form_for @q, url: cars_path, method: :get, class: "bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 lg:p-8 border border-gray-100" do |f| %>
+      <!-- 기본 필터 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700 sm:hidden">제조사</label>
+          <%= f.text_field :make_cont, placeholder: "제조사", class: "w-full px-3 sm:px-4 py-3 sm:py-4 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white hover:border-blue-300" %>
         </div>
-        <div>
-          <%= f.text_field :model_cont, placeholder: "모델명", class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700 sm:hidden">모델명</label>
+          <%= f.text_field :model_cont, placeholder: "모델명", class: "w-full px-3 sm:px-4 py-3 sm:py-4 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white hover:border-blue-300" %>
         </div>
-        <div>
-          <%= f.number_field :price_lteq, placeholder: "최대 가격", class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700 sm:hidden">최대 가격</label>
+          <%= f.number_field :price_lteq, placeholder: "최대 가격", class: "w-full px-3 sm:px-4 py-3 sm:py-4 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white hover:border-blue-300" %>
         </div>
-        <div>
-          <%= f.number_field :year_gteq, placeholder: "최소 연식", class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700 sm:hidden">최소 연식</label>
+          <%= f.number_field :year_gteq, placeholder: "최소 연식", class: "w-full px-3 sm:px-4 py-3 sm:py-4 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white hover:border-blue-300" %>
         </div>
       </div>
       
-      <!-- Advanced Filters (Collapsible) -->
-      <div class="border-t pt-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div>
-            <%= f.number_field :mileage_lteq, placeholder: "최대 주행거리", class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+      <!-- 고급 필터 -->
+      <div class="border-t border-gray-200 pt-4 sm:pt-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700 sm:hidden">최대 주행거리</label>
+            <%= f.number_field :mileage_lteq, placeholder: "최대 주행거리", class: "w-full px-3 sm:px-4 py-3 sm:py-4 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white hover:border-blue-300" %>
           </div>
-          <div>
-            <%= f.text_field :color_cont, placeholder: "색상", class: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" %>
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700 sm:hidden">색상</label>
+            <%= f.text_field :color_cont, placeholder: "색상", class: "w-full px-3 sm:px-4 py-3 sm:py-4 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white hover:border-blue-300" %>
           </div>
-          <div class="flex items-end">
-            <%= f.submit "검색", class: "w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors font-medium" %>
+          <div class="flex items-end sm:col-span-2 lg:col-span-1">
+            <%= f.submit "검색", class: "w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 sm:py-4 px-4 sm:px-6 rounded-lg sm:rounded-xl transition-all duration-300 font-medium text-sm sm:text-base transform hover:scale-105 hover:shadow-lg active:scale-95 min-h-[48px] touch-manipulation" %>
           </div>
         </div>
       </div>
@@ -44,51 +53,56 @@
 </div>
 
 <!-- Results Section -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6 sm:py-8 lg:py-12">
   <!-- Results Header -->
-  <div class="flex justify-between items-center mb-6">
-    <div>
-      <h2 class="text-xl font-semibold text-gray-900">검색 결과</h2>
-      <p class="text-gray-600">총 <%= @pagination[:total_count] %>대의 차량이 검색되었습니다</p>
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-6 mb-6 sm:mb-8 lg:mb-10">
+    <div class="text-center sm:text-left">
+      <h2 class="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 mb-1 sm:mb-2">검색 결과</h2>
+      <p class="text-sm sm:text-base text-gray-600">총 <%= @pagination[:total_count] %>대의 차량이 검색되었습니다</p>
     </div>
     
     <!-- Comparison Cart -->
     <% comparison_cars = session[:comparison_cars] || [] %>
     <% if comparison_cars.any? %>
-      <div class="bg-blue-50 border border-blue-200 rounded-lg px-4 py-2">
-        <span class="text-blue-800 font-medium">비교 목록: <%= comparison_cars.length %>개</span>
-        <%= link_to "비교하기", car_comparisons_path, class: "ml-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm" %>
+      <div class="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-xl px-4 sm:px-6 py-3 sm:py-4 shadow-sm">
+        <div class="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
+          <span class="text-blue-800 font-medium text-sm sm:text-base">비교 목록: <%= comparison_cars.length %>개</span>
+          <%= link_to "비교하기", car_comparisons_path, class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 min-h-[40px] touch-manipulation flex items-center justify-center" %>
+        </div>
       </div>
     <% end %>
   </div>
 
   <!-- Car Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-8">
     <% @cars.each_with_index do |car, index| %>
-      <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+      <div class="bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1 border border-gray-100">
         <!-- Car Image -->
-        <div class="relative">
+        <div class="relative group">
           <% if car.images.attached? %>
-            <%= image_tag car.images.first.representation(resize_to_limit: [400, 250]), class: "w-full h-48 object-cover" %>
+            <%= image_tag car.images.first.representation(resize_to_limit: [400, 250]), class: "w-full h-44 sm:h-48 lg:h-52 object-cover group-hover:scale-105 transition-transform duration-300" %>
           <% else %>
             <% 
               # 기본 자동차 이미지들을 순환하여 사용
               default_images = ["car_1.jpg", "car_2.jpg", "car_3.jpg", "car_4.jpg", "car_5.jpg", "car_6.jpg"]
               image_name = default_images[index % default_images.length]
             %>
-            <img src="/generated_images/<%= image_name %>" alt="<%= car.make %> <%= car.model %>" class="w-full h-48 object-cover">
+            <img src="/generated_images/<%= image_name %>" alt="<%= car.make %> <%= car.model %>" class="w-full h-44 sm:h-48 lg:h-52 object-cover group-hover:scale-105 transition-transform duration-300">
           <% end %>
           
+          <!-- Gradient Overlay -->
+          <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          
           <!-- Comparison Button -->
-          <div class="absolute top-2 right-2">
+          <div class="absolute top-3 right-3">
             <% if comparison_cars.include?(car.id) %>
-              <%= link_to remove_car_comparisons_path(car_id: car.id), data: { turbo_method: :delete }, class: "bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-lg" do %>
+              <%= link_to remove_car_comparisons_path(car_id: car.id), data: { turbo_method: :delete }, class: "bg-red-500 hover:bg-red-600 text-white p-2.5 rounded-full shadow-lg backdrop-blur-sm transition-all duration-200 transform hover:scale-110 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
               <% end %>
             <% else %>
-              <%= link_to add_car_comparisons_path(car_id: car.id), data: { turbo_method: :post }, class: "bg-white hover:bg-gray-50 text-gray-700 p-2 rounded-full shadow-lg border" do %>
+              <%= link_to add_car_comparisons_path(car_id: car.id), data: { turbo_method: :post }, class: "bg-white/90 hover:bg-white text-gray-700 hover:text-blue-600 p-2.5 rounded-full shadow-lg backdrop-blur-sm border border-white/50 transition-all duration-200 transform hover:scale-110 min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation" do %>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
@@ -98,23 +112,32 @@
         </div>
 
         <!-- Car Info -->
-        <div class="p-4">
-          <h3 class="text-lg font-semibold text-gray-900 mb-1"><%= car.make %> <%= car.model %></h3>
-          <p class="text-gray-600 text-sm mb-3"><%= car.year %>년 • <%= number_with_delimiter(car.mileage) %>km • <%= car.color %></p>
+        <div class="p-4 sm:p-5 lg:p-6">
+          <h3 class="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 mb-2 line-clamp-1"><%= car.make %> <%= car.model %></h3>
+          <p class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 flex flex-wrap gap-1 sm:gap-2">
+            <span class="bg-gray-100 px-2 py-1 rounded-full"><%= car.year %>년</span>
+            <span class="bg-gray-100 px-2 py-1 rounded-full"><%= number_with_delimiter(car.mileage) %>km</span>
+            <span class="bg-gray-100 px-2 py-1 rounded-full"><%= car.color %></span>
+          </p>
           
           <!-- Price and Rating -->
-          <div class="flex justify-between items-center mb-3">
-            <span class="text-xl font-bold text-blue-600">₩<%= number_to_currency(car.price, precision: 0, unit: "") %></span>
+          <div class="flex justify-between items-center mb-4 sm:mb-5">
+            <span class="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600">₩<%= number_to_currency(car.price, precision: 0, unit: "") %></span>
             <% if car.reviews.any? %>
-              <div class="flex items-center">
+              <div class="flex items-center bg-yellow-50 px-2 py-1 rounded-full">
                 <span class="text-yellow-400 text-sm">★</span>
-                <span class="text-sm text-gray-600 ml-1"><%= car.average_rating %></span>
+                <span class="text-xs sm:text-sm text-gray-700 ml-1 font-medium"><%= car.average_rating %></span>
               </div>
             <% end %>
           </div>
           
           <!-- Action Button -->
-          <%= link_to "자세히 보기", car_path(car), class: "block w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors font-medium" %>
+          <%= link_to "자세히 보기", car_path(car), class: "block w-full text-center bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 sm:py-4 rounded-lg sm:rounded-xl transition-all duration-300 font-medium text-sm sm:text-base transform hover:scale-105 hover:shadow-lg active:scale-95 min-h-[48px] touch-manipulation flex items-center justify-center gap-2" %>
+            <span>자세히 보기</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
         </div>
       </div>
     <% end %>
